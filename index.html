@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -15,7 +15,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23131a2c'/%3E%3Cstop offset='100%25' stop-color='%23070a18'/%3E%3C/linearGradient%3E%3ClinearGradient id='bl' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%235b9bff'/%3E%3Cstop offset='100%25' stop-color='%233b6df0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='108' fill='url(%23bg)'/%3E%3Crect x='126' y='140' width='260' height='72' rx='26' fill='url(%23bl)'/%3E%3Crect x='126' y='186' width='260' height='26' fill='url(%23bl)'/%3E%3Ctext x='256' y='190' font-family='Arial' font-size='38' font-weight='800' fill='white' text-anchor='middle'%3EDL%3C/text%3E%3Ccircle cx='176' cy='258' r='15' stroke='%235b9bff' stroke-width='2.5' fill='none'/%3E%3Ccircle cx='176' cy='314' r='15' stroke='%235b9bff' stroke-width='2.5' fill='none'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icon.png">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&family=Cormorant+Garamond:wght@500;600;700&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -93,22 +93,22 @@
     z-index: -1;
   }
   .bg-orb-1 {
-    width: 400px; height: 400px;
-    background: rgba(60,120,255,0.12);
+    width: 420px; height: 420px;
+    background: rgba(60,120,255,0.13);
     top: -10%; left: -5%;
-    animation: orbFloat1 18s ease-in-out infinite;
+    animation: orbFloat1 28s cubic-bezier(.45,.05,.55,.95) infinite;
   }
   .bg-orb-2 {
-    width: 350px; height: 350px;
-    background: rgba(100,60,220,0.09);
+    width: 360px; height: 360px;
+    background: rgba(110,80,220,0.10);
     bottom: -10%; right: -5%;
-    animation: orbFloat2 22s ease-in-out infinite;
+    animation: orbFloat2 34s cubic-bezier(.45,.05,.55,.95) infinite;
   }
   .bg-orb-3 {
-    width: 250px; height: 250px;
-    background: rgba(40,100,255,0.07);
+    width: 260px; height: 260px;
+    background: rgba(233,200,122,0.07);
     top: 40%; left: 50%;
-    animation: orbFloat3 15s ease-in-out infinite;
+    animation: orbFloat3 26s cubic-bezier(.45,.05,.55,.95) infinite;
   }
   @keyframes orbFloat1 {
     0%, 100% { transform: translateZ(0) translate(0, 0) scale(1); }
@@ -140,7 +140,7 @@
     pointer-events: none;
     mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 70%);
     -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 70%);
-    animation: gridPulse 8s ease-in-out infinite alternate;
+    animation: gridPulse 14s ease-in-out infinite alternate;
   }
   @keyframes gridPulse {
     0% { opacity: 0.4; }
@@ -167,79 +167,72 @@
     position: relative;
     overflow-x: hidden;
   }
-  /* Optimised aurora background — GPU-friendly, fewer layers & filters */
+  /* Luxury cosmos background — deep cobalt blue with soft gold accents.
+     GPU-friendly: only transform is animated, no filter recalculation. */
   body::before {
     content: '';
     position: fixed;
-    inset: -10%;
+    inset: 0;
+    z-index: -3;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%,  rgba(110,170,255,0.10) 0%, transparent 65%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(233,200,122,0.07) 0%, transparent 70%),
+      linear-gradient(180deg, #060a18 0%, #0a1230 45%, #070a1a 100%);
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: -8%;
     z-index: -2;
     pointer-events: none;
     contain: strict;
     transform: translateZ(0);
     background:
-      radial-gradient(45% 35% at 50% 100%, rgba(255,122,60,0.40), transparent 70%),
-      radial-gradient(40% 32% at 18% 22%, rgba(255,122,60,0.22), transparent 70%),
-      radial-gradient(36% 28% at 82% 28%, rgba(255,140,80,0.20), transparent 70%),
-      radial-gradient(42% 34% at 75% 80%, rgba(255,100,40,0.22), transparent 70%),
-      radial-gradient(34% 26% at 22% 85%, rgba(255,160,90,0.18), transparent 70%);
-    filter: blur(45px);
-    animation: auroraDrift 40s ease-in-out infinite alternate;
+      radial-gradient(38% 30% at 22% 18%, rgba(80,150,255,0.16), transparent 70%),
+      radial-gradient(34% 26% at 80% 24%, rgba(160,120,255,0.10), transparent 70%),
+      radial-gradient(40% 32% at 28% 82%, rgba(233,200,122,0.10), transparent 70%),
+      radial-gradient(36% 28% at 78% 78%, rgba(80,140,255,0.12), transparent 70%);
+    filter: blur(60px);
+    animation: cosmosDrift 55s cubic-bezier(.45,.05,.55,.95) infinite alternate;
     will-change: transform;
   }
-  /* Lightweight grain — static CSS pattern, no SVG filter */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    contain: strict;
-    background:
-      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
-    background-size: 56px 56px;
-    opacity: 0.45;
-  }
-  @keyframes auroraDrift {
+  @keyframes cosmosDrift {
     0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
-    25%  { transform: translate3d(-3%, 2%, 0) scale(1.06) rotate(1deg); }
-    50%  { transform: translate3d(2%, -3%, 0) scale(0.96) rotate(-1deg); }
-    75%  { transform: translate3d(-2%, -3%, 0) scale(1.08) rotate(0.8deg); }
-    100% { transform: translate3d(3%, 3%, 0) scale(1.03) rotate(-0.8deg); }
+    25%  { transform: translate3d(-2.5%, 1.5%, 0) scale(1.04) rotate(0.8deg); }
+    50%  { transform: translate3d(1.5%, -2%, 0) scale(0.98) rotate(-0.6deg); }
+    75%  { transform: translate3d(-1.5%, -2%, 0) scale(1.05) rotate(0.5deg); }
+    100% { transform: translate3d(2%, 2%, 0) scale(1.02) rotate(-0.5deg); }
   }
   @media (prefers-reduced-motion: reduce) {
-    body::before { animation: none; }
+    body::after, .bg-orb, .bg-grid { animation: none !important; }
   }
-  /* Mobile tuning — kill the animated orbs and keep the bg as a clean solid dark.
-     Avoids visible aurora "seams" / colour bands in empty space on phones. */
+  /* Mobile tuning — keep the cosmic gradient but drop the heaviest orb so
+     blur cost stays low on phones. */
   @media (max-width: 600px) {
     html {
-      background-attachment: scroll;       /* iOS-friendly */
-      background-image:
-        radial-gradient(ellipse 120% 50% at 50% 100%, rgba(255,122,60,0.18) 0%, transparent 60%),
-        radial-gradient(ellipse 100% 40% at 50% -5%, rgba(255,122,60,0.10) 0%, transparent 60%),
-        linear-gradient(180deg, #0a0a0c 0%, #0a0a0c 100%);
-      background-color: #0a0a0c;
+      background-attachment: scroll;
+      background-color: #060a18;
     }
-    body::before { display: none; }        /* no aurora orbs on phones */
-    body::after  { display: none; }        /* no grain overlay on phones */
+    body::after { filter: blur(48px); }
+    .bg-orb-3 { display: none; }
   }
-  /* Custom scrollbars for a more polished feel */
+  /* Custom scrollbars — match the luxury gold + cobalt palette */
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(255,122,60,0.40), rgba(255,160,90,0.40));
+    background: linear-gradient(180deg, rgba(233,200,122,0.40), rgba(80,140,255,0.40));
     border-radius: 10px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, rgba(255,122,60,0.60), rgba(255,160,90,0.60));
+    background: linear-gradient(180deg, rgba(233,200,122,0.60), rgba(80,140,255,0.60));
     background-clip: padding-box;
   }
   * { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.18) transparent; }
   /* Improved selection */
-  ::selection { background: rgba(255,122,60,0.45); color: #fff; }
+  ::selection { background: rgba(80,140,255,0.45); color: #fff; }
 
   .header {
     position: sticky; top: 0; z-index: 100;
@@ -2448,60 +2441,78 @@
     color: #6aa8ff !important;
   }
 
-  /* ── Bazar Pending Banner ── */
+  /* ── Bazar Pending Banner — always-visible mobile reminder ── */
   #bazarPendingBanner {
     display: none;
-    position: sticky;
-    top: var(--header-h, 68px);
-    z-index: 90;
-    padding: 0 14px;
-    animation: bannerSlideDown .35s cubic-bezier(.34,1.56,.64,1);
+    position: fixed;
+    top: calc(var(--header-h, 68px) + env(safe-area-inset-top, 0px));
+    left: 0;
+    right: 0;
+    z-index: 95;
+    padding: 0 12px;
+    pointer-events: none;
+    animation: bannerSlideDown .4s cubic-bezier(.34,1.56,.64,1);
   }
-  #bazarPendingBanner.is-visible { display: block; }
-  @media (min-width: 601px) {
+  #bazarPendingBanner.is-visible { display: block !important; }
+  #bazarPendingBanner .bazar-banner-inner { pointer-events: auto; }
+  @media (min-width: 901px) {
     #bazarPendingBanner { display: none !important; }
   }
   @keyframes bannerSlideDown {
-    from { opacity: 0; transform: translateY(-12px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translate3d(0, -16px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
   }
   .bazar-banner-inner {
     display: flex;
     align-items: center;
-    gap: 9px;
-    background: linear-gradient(90deg, rgba(255,122,60,0.18), rgba(255,100,40,0.10));
-    border: 1px solid rgba(255,122,60,0.38);
-    border-radius: 12px;
-    padding: 9px 13px;
-    margin-bottom: 10px;
-    box-shadow: 0 4px 16px rgba(255,100,40,0.12);
-    backdrop-filter: blur(6px);
+    gap: 10px;
+    background: linear-gradient(95deg, rgba(232,200,122,0.22), rgba(232,165,90,0.14));
+    border: 1px solid rgba(232,200,122,0.45);
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin: 0 auto;
+    max-width: 720px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.45), 0 2px 6px rgba(232,200,122,0.10);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
-  .bazar-banner-icon { font-size: 18px; flex-shrink: 0; }
+  .bazar-banner-icon {
+    font-size: 19px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 6px rgba(232,200,122,0.4));
+  }
   .bazar-banner-text {
     flex: 1;
-    font-size: 12.5px;
+    font-size: 13px;
     font-weight: 600;
-    color: #ffb585;
+    color: #f3deb1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: 0.2px;
   }
   .bazar-banner-btn {
     flex-shrink: 0;
-    padding: 5px 12px;
-    border: 1px solid rgba(255,122,60,0.5);
-    border-radius: 20px;
-    background: rgba(255,122,60,0.18);
-    color: #ffb585;
-    font-size: 11.5px;
+    padding: 6px 13px;
+    border: 1px solid rgba(232,200,122,0.55);
+    border-radius: 999px;
+    background: rgba(232,200,122,0.22);
+    color: #f3deb1;
+    font-size: 12px;
     font-weight: 700;
     cursor: pointer;
-    transition: all .2s;
+    transition: all .2s ease;
     font-family: inherit;
     touch-action: manipulation;
   }
-  .bazar-banner-btn:hover { background: rgba(255,122,60,0.30); }
+  .bazar-banner-btn:hover,
+  .bazar-banner-btn:active { background: rgba(232,200,122,0.35); transform: translateY(-1px); }
+  /* Push the main content down by an approximate banner height so the first
+     section never sits underneath the fixed reminder. */
+  body.has-bazar-banner .main { padding-top: 56px; }
+  @media (min-width: 901px) {
+    body.has-bazar-banner .main { padding-top: 0; }
+  }
   .bazar-banner-close {
     flex-shrink: 0;
     background: none;
@@ -2518,6 +2529,512 @@
 
     .auth-box::after, .auth-btn::after, .btn-primary::after,
     .bottom-nav .nav-item.active::before { filter: none; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     LUXURY UI LAYER — gold accents, serif typography, premium glass.
+     Sits on top of the cobalt-blue base theme so the existing layout
+     stays intact while every key surface picks up a refined feel.
+     ════════════════════════════════════════════════════════════════ */
+  :root {
+    --lux-gold: #e9c87a;
+    --lux-gold-deep: #b08a3a;
+    --lux-gold-soft: rgba(233,200,122,0.55);
+    --lux-gold-faint: rgba(233,200,122,0.16);
+    --lux-gold-glow: rgba(233,200,122,0.32);
+    --lux-cream: #f5e6c4;
+    --lux-ink: #060912;
+  }
+  @keyframes luxShimmer {
+    0%   { background-position: -180% 0; }
+    100% { background-position: 280% 0; }
+  }
+  @keyframes luxHaloPulse {
+    0%, 100% { opacity: .58; transform: translateX(-50%) scale(1); }
+    50%      { opacity: .82; transform: translateX(-50%) scale(1.03); }
+  }
+  @keyframes luxBorderSpin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* — Brand wordmark: serif treatment with a soft gold accent on "Life". — */
+  .header-title {
+    font-family: 'Playfair Display', 'Inter', serif;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    font-size: 18px;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.4);
+  }
+  .header-title span {
+    background: linear-gradient(135deg, #f5e6c4 0%, #e9c87a 45%, #b08a3a 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-style: italic;
+    font-weight: 700;
+    text-shadow: none;
+    filter: drop-shadow(0 0 8px rgba(233,200,122,0.35));
+  }
+  .header-date {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: .04em;
+    color: rgba(233,200,122,0.55);
+  }
+
+  /* — Section pills: subtle gold edge, softer cobalt fill. — */
+  .sec-label {
+    background: linear-gradient(180deg, rgba(233,200,122,0.10), rgba(80,140,255,0.04));
+    border: 1px solid rgba(233,200,122,0.28);
+    color: var(--lux-cream);
+    letter-spacing: .18em;
+    box-shadow:
+      inset 0 1px 0 rgba(245,230,196,0.20),
+      0 0 18px rgba(233,200,122,0.10);
+  }
+
+  /* — Card surfaces: keep the navy base, add a hairline gold accent edge on hover. — */
+  .card {
+    border-color: rgba(233,200,122,0.10);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(233,200,122,0.0) 0%, rgba(233,200,122,0.0) 60%, rgba(233,200,122,0.18) 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .35s ease;
+  }
+  .card:hover {
+    border-color: rgba(233,200,122,0.30);
+    box-shadow:
+      inset 0 1px 0 rgba(245,230,196,0.10),
+      0 0 0 1px rgba(233,200,122,0.20),
+      0 22px 56px rgba(0,0,0,0.55),
+      0 0 80px rgba(70,140,255,0.18);
+  }
+  .card:hover::before { opacity: 1; }
+
+  /* — Auth overlay: deeper "spotlight" backdrop. — */
+  .auth-overlay {
+    background:
+      radial-gradient(60% 45% at 50% 100%, rgba(233,200,122,0.20), transparent 70%),
+      radial-gradient(70% 55% at 50% 110%, rgba(70,130,255,0.45), transparent 65%),
+      radial-gradient(40% 35% at 50% 0%,   rgba(100,160,255,0.14), transparent 60%),
+      #04060f;
+  }
+
+  /* — Auth card: real gold-trim border with an inner glass surface. — */
+  .auth-box {
+    position: relative;
+    padding: 36px 30px 30px;
+    border-radius: 24px;
+    background:
+      linear-gradient(180deg, rgba(245,230,196,0.05) 0%, transparent 35%),
+      linear-gradient(180deg, #0e1426 0%, #060a16 100%);
+    border: 1px solid rgba(233,200,122,0.32);
+    box-shadow:
+      inset 0 1px 0 rgba(245,230,196,0.12),
+      0 36px 90px rgba(0,0,0,0.75),
+      0 0 90px rgba(70,140,255,0.22),
+      0 0 0 1px rgba(233,200,122,0.10);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .auth-box::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background:
+      linear-gradient(135deg,
+        rgba(233,200,122,0.85) 0%,
+        rgba(180,140,60,0.20) 28%,
+        rgba(60,110,240,0.30) 58%,
+        rgba(233,200,122,0.85) 100%);
+    background-size: 220% 220%;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+    animation: luxShimmer 14s linear infinite;
+  }
+  .auth-box::after {
+    width: 460px;
+    height: 280px;
+    top: -150px;
+    background: radial-gradient(closest-side,
+      rgba(233,200,122,0.55) 0%,
+      rgba(80,140,255,0.45) 45%,
+      transparent 75%);
+    filter: blur(26px);
+    animation: luxHaloPulse 9s cubic-bezier(.45,.05,.55,.95) infinite;
+  }
+
+  /* — Auth headings: editorial serif voice. — */
+  .auth-box h2 {
+    font-family: 'Playfair Display', 'Inter', serif;
+    font-weight: 600;
+    font-size: 26px;
+    letter-spacing: 0.005em;
+    color: #fff;
+    margin-bottom: 4px;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.4);
+  }
+  /* Gold hairline under the title for that editorial feel. */
+  .auth-box h2::after {
+    content: '';
+    display: block;
+    width: 58px;
+    height: 1px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, transparent, var(--lux-gold) 50%, transparent);
+    opacity: .8;
+  }
+  .auth-box .auth-subtitle {
+    color: rgba(218,210,196,0.62);
+    font-size: 12.5px;
+    letter-spacing: .01em;
+    margin-bottom: 24px;
+  }
+
+  /* — Inputs: refined gold focus ring + glass surface. — */
+  .auth-box input,
+  .modal input {
+    background: rgba(8,12,24,0.65);
+    border: 1px solid rgba(233,200,122,0.16);
+    border-radius: 12px;
+    transition: border-color .2s ease, box-shadow .25s ease, background .2s ease;
+  }
+  .auth-box input:focus,
+  .modal input:focus {
+    border-color: rgba(233,200,122,0.65) !important;
+    background: rgba(10,14,28,0.78);
+    box-shadow:
+      0 0 0 3px rgba(233,200,122,0.18),
+      0 0 18px rgba(233,200,122,0.18);
+  }
+  .auth-box label,
+  .modal label {
+    color: rgba(218,210,196,0.62);
+    font-size: 10.5px;
+    letter-spacing: .22em;
+    font-weight: 600;
+  }
+
+  /* — Primary buttons: cobalt core with a sweeping gold shimmer. — */
+  .auth-btn, .btn-primary {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #5b9bff 0%, #3b6df0 60%, #2d57c8 100%);
+    border: 1px solid rgba(233,200,122,0.42);
+    border-radius: 999px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    box-shadow:
+      0 12px 32px rgba(70,130,255,0.45),
+      inset 0 1px 0 rgba(245,230,196,0.30),
+      inset 0 0 0 1px rgba(233,200,122,0.25),
+      0 0 28px rgba(233,200,122,0.12);
+  }
+  .auth-btn::before, .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: -60%;
+    width: 50%;
+    background: linear-gradient(120deg,
+      transparent 0%,
+      rgba(245,230,196,0.55) 50%,
+      transparent 100%);
+    transform: skewX(-22deg);
+    pointer-events: none;
+    transition: left .9s ease;
+  }
+  .auth-btn:hover::before, .btn-primary:hover::before { left: 130%; }
+  .auth-btn:hover, .btn-primary:hover {
+    filter: brightness(1.06);
+    box-shadow:
+      0 16px 40px rgba(70,130,255,0.55),
+      inset 0 1px 0 rgba(245,230,196,0.40),
+      inset 0 0 0 1px rgba(233,200,122,0.42),
+      0 0 38px rgba(233,200,122,0.30);
+  }
+  .auth-btn::after, .btn-primary::after {
+    background: linear-gradient(135deg, rgba(233,200,122,0.40), rgba(70,130,255,0.45));
+  }
+
+  /* — Auth toggle / forgot-password link: refined gold. — */
+  .auth-toggle a, .auth-link {
+    color: var(--lux-gold);
+    text-shadow: 0 0 12px rgba(233,200,122,0.45);
+    font-weight: 600;
+    letter-spacing: .02em;
+  }
+  .auth-toggle a:hover, .auth-link:hover {
+    color: var(--lux-cream);
+    text-decoration: none;
+    text-shadow: 0 0 16px rgba(245,230,196,0.65);
+  }
+
+  /* — Modal: matching luxe treatment. — */
+  .modal {
+    border-radius: 22px;
+    border: 1px solid rgba(233,200,122,0.20);
+    box-shadow:
+      inset 0 1px 0 rgba(245,230,196,0.10),
+      0 36px 90px rgba(0,0,0,0.78),
+      0 0 80px rgba(70,140,255,0.18),
+      0 0 0 1px rgba(233,200,122,0.10);
+  }
+  .modal h2 {
+    font-family: 'Playfair Display', 'Inter', serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.005em;
+    color: #fff;
+    margin-bottom: 4px;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.4);
+  }
+  .modal h2::after {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 1px;
+    margin: 8px 0 0;
+    background: linear-gradient(90deg, var(--lux-gold), transparent);
+    opacity: .75;
+  }
+  .modal p {
+    color: rgba(218,210,196,0.60);
+    letter-spacing: .01em;
+  }
+
+  /* — Modal overlay backdrop: warmer glass. — */
+  .modal-overlay {
+    background: rgba(4,6,15,0.82);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+  }
+
+  /* — Account modal: highlight the profile / row chrome with gold trim. — */
+  .profile-header {
+    border: 1px solid rgba(233,200,122,0.20);
+    background:
+      linear-gradient(180deg, rgba(233,200,122,0.08) 0%, transparent 50%),
+      linear-gradient(180deg, rgba(14,20,38,0.85), rgba(8,12,24,0.85));
+    box-shadow:
+      inset 0 1px 0 rgba(245,230,196,0.10),
+      0 14px 36px rgba(0,0,0,0.45);
+  }
+  .profile-avatar {
+    background: linear-gradient(135deg, #e9c87a 0%, #b08a3a 60%, #6c4f1c 100%) !important;
+    color: #fff !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.30),
+      0 0 24px rgba(233,200,122,0.45);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+  }
+  .profile-name {
+    font-family: 'Playfair Display', 'Inter', serif;
+    font-weight: 600;
+    letter-spacing: 0.005em;
+  }
+  .profile-role-badge {
+    background: linear-gradient(135deg, rgba(233,200,122,0.22), rgba(176,138,58,0.12));
+    border: 1px solid rgba(233,200,122,0.45);
+    color: var(--lux-cream);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .account-row {
+    border: 1px solid rgba(233,200,122,0.10);
+    background: rgba(10,14,26,0.55);
+    transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+  }
+  .account-row:hover {
+    border-color: rgba(233,200,122,0.30);
+    box-shadow: 0 0 0 1px rgba(233,200,122,0.10), 0 12px 30px rgba(0,0,0,0.35);
+  }
+  .account-row-label {
+    color: rgba(218,210,196,0.60);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 10.5px;
+  }
+  .account-row-value {
+    font-family: 'Inter', sans-serif;
+    color: #f5f0e4;
+    letter-spacing: 0;
+  }
+  .account-row-action {
+    background: rgba(233,200,122,0.10);
+    border: 1px solid rgba(233,200,122,0.42);
+    color: var(--lux-cream);
+    letter-spacing: .04em;
+    font-weight: 700;
+    transition: background .2s ease, border-color .2s ease, transform .15s ease, box-shadow .2s ease;
+  }
+  .account-row-action:hover {
+    background: rgba(233,200,122,0.22);
+    border-color: rgba(233,200,122,0.85);
+    box-shadow: 0 0 18px rgba(233,200,122,0.32);
+  }
+  .account-row-action.danger {
+    background: rgba(232,85,85,0.10);
+    border-color: rgba(232,85,85,0.42);
+    color: #ffb0b0;
+  }
+  .account-row-action.danger:hover {
+    background: rgba(232,85,85,0.20);
+    border-color: rgba(232,85,85,0.75);
+    box-shadow: 0 0 18px rgba(232,85,85,0.32);
+  }
+  .account-row-action[disabled] {
+    opacity: .45;
+    cursor: not-allowed;
+  }
+  .language-segmented {
+    border: 1px solid rgba(233,200,122,0.28);
+    background: rgba(10,14,26,0.55);
+    border-radius: 999px;
+    padding: 4px;
+  }
+  .language-segmented button {
+    border-radius: 999px;
+    color: rgba(218,210,196,0.65);
+    letter-spacing: .04em;
+    font-weight: 700;
+    transition: all .2s ease;
+  }
+  .language-segmented button.active {
+    background: linear-gradient(135deg, rgba(233,200,122,0.85), rgba(176,138,58,0.85));
+    color: var(--lux-ink);
+    box-shadow: 0 0 18px rgba(233,200,122,0.45);
+  }
+
+  /* — Header sync/orders button: gold-trimmed glass chip. — */
+  .sync-btn {
+    background: rgba(10,14,26,0.65);
+    border: 1px solid rgba(233,200,122,0.20);
+    color: rgba(245,230,196,0.85);
+    letter-spacing: .04em;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 rgba(245,230,196,0.06);
+  }
+  .sync-btn:hover {
+    background: rgba(20,26,42,0.85);
+    border-color: rgba(233,200,122,0.45);
+    box-shadow: 0 0 14px rgba(233,200,122,0.22);
+  }
+  .sync-dot.online {
+    background: var(--lux-gold);
+    box-shadow: 0 0 10px rgba(233,200,122,0.95), 0 0 22px rgba(233,200,122,0.55);
+  }
+
+  /* — Header user menu dropdown — luxe glass. — */
+  .header-user-menu {
+    background: rgba(10,14,26,0.92);
+    border-color: rgba(233,200,122,0.22);
+    box-shadow:
+      0 18px 50px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(233,200,122,0.10),
+      inset 0 1px 0 rgba(245,230,196,0.06);
+  }
+  .user-menu-option:hover, .user-menu-option.active {
+    background: rgba(233,200,122,0.12);
+    color: var(--lux-cream);
+  }
+  .user-menu-option .menu-check {
+    color: var(--lux-gold);
+  }
+
+  /* — Bazar pending banner: warmer accent. — */
+  .bazar-banner-btn {
+    border-color: rgba(233,200,122,0.55);
+    background: rgba(233,200,122,0.14);
+    color: var(--lux-cream);
+  }
+  .bazar-banner-btn:hover {
+    background: rgba(233,200,122,0.26);
+    box-shadow: 0 0 14px rgba(233,200,122,0.32);
+  }
+
+  /* — Bottom nav active icon: switch the halo to gold while keeping shape. — */
+  .bottom-nav .nav-item.active { color: var(--lux-cream); }
+  .bottom-nav .nav-item.active .nav-icon {
+    filter: drop-shadow(0 0 8px rgba(233,200,122,0.85));
+  }
+  .bottom-nav .nav-item.active::before {
+    background: radial-gradient(closest-side, rgba(233,200,122,0.42), transparent 70%);
+  }
+
+  /* — Calendar "today" cell: gold-tinted halo. — */
+  .cal-day.today {
+    background: linear-gradient(135deg, #5b9bff 0%, #3b6df0 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(245,230,196,0.55),
+      0 0 24px rgba(233,200,122,0.55),
+      0 4px 14px rgba(70,130,255,0.55);
+  }
+
+  /* — Quick stat values: warmer ivory-to-gold gradient text. — */
+  .qs-val, .stat-val {
+    background: linear-gradient(180deg, #ffffff 0%, #f5e6c4 75%, #d4af6a 110%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 14px rgba(233,200,122,0.30));
+    font-family: 'Playfair Display', 'Inter', serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* — Password strength label keeps semantic colours but typesetting refined. — */
+  .pw-strength-label { letter-spacing: .14em; text-transform: uppercase; }
+
+  /* — Selection: warm gold tone instead of cobalt. — */
+  ::selection { background: rgba(233,200,122,0.45); color: #04060f; }
+
+  /* — Auth password eye / pw-eye buttons. — */
+  .auth-pw-toggle:hover, .pw-eye:hover {
+    color: var(--lux-gold) !important;
+  }
+
+  /* — Touch / iOS niceties: prevent the iOS rubber-band area from showing the
+       plain dark background where the new gold accents stop. — */
+  body { background: #04060f; }
+
+  /* — Smaller screens: tighter spacing for the auth-box so the gold-trim
+       still reads on phone. — */
+  @media (max-width: 420px) {
+    .auth-box { padding: 28px 22px 24px; border-radius: 20px; }
+    .auth-box h2 { font-size: 22px; }
+    .modal { border-radius: 18px; }
+    .modal h2 { font-size: 19px; }
+    .header-title { font-size: 16px; }
+  }
+
+  /* — Reduce motion: still show the gold trim but stop the shimmer/halo loops. — */
+  @media (prefers-reduced-motion: reduce) {
+    .auth-box::before { animation: none; }
+    .auth-box::after { animation: none; }
+    .auth-btn::before, .btn-primary::before { display: none; }
   }
 </style>
 </head>
@@ -2557,18 +3074,17 @@
       </svg>
     </div>
     <h2 id="authTitle">লগইন করো</h2>
-    <p class="auth-subtitle" id="authSubtitle">তোমার username/email ও password দিয়ে লগইন করো</p>
+    <p class="auth-subtitle" id="authSubtitle">তোমার email ও password দিয়ে লগইন করো</p>
     <div class="auth-error" id="authError"></div>
 
 
 
-    <label>Username <span style="color:var(--text5);text-transform:none;font-weight:400">বা Email</span></label>
-    <input type="text" id="authUsername" placeholder="যেমন: ratul অথবা you@email.com" autocomplete="off" autocapitalize="off" spellcheck="false" />
-    <div class="username-check" id="usernameCheck" aria-live="polite"></div>
+    <label>Email</label>
+    <input type="email" id="authUsername" placeholder="you@email.com" autocomplete="email" autocapitalize="off" spellcheck="false" inputmode="email" />
+    <div class="username-check" id="usernameCheck" aria-live="polite" style="display:none"></div>
 
     <div id="authEmailRow" style="display:none">
-      <label>Email <span style="color:var(--text5);text-transform:none;font-weight:400">(password reset এর জন্য)</span></label>
-      <input type="email" id="authEmail" placeholder="তোমার@email.com" autocomplete="off" autocapitalize="off" spellcheck="false" />
+      <input type="email" id="authEmail" autocomplete="off" autocapitalize="off" spellcheck="false" />
     </div>
 
     <div id="authOrdersOptRow" style="display:none">
@@ -2641,6 +3157,9 @@
     <div class="header-date" id="todayDate"></div>
   </div>
   <div style="display:flex;align-items:center;gap:4px;">
+    <button class="sync-btn lang-toggle-btn" id="langToggleBtn" onclick="toggleLanguage()" title="Switch language">
+      <span id="langToggleLabel">EN</span>
+    </button>
     <button class="sync-btn" id="ordersDesktopBtn" onclick="switchToOrders()" style="display:none">📊 Orders</button>
     <button class="sync-btn" id="syncBtn" onclick="openFirebaseModal()" title="অ্যাকাউন্ট ডিটেইলস">
       <div class="sync-dot" id="syncDot"></div>
@@ -3681,7 +4200,7 @@ const dayNamesEn = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 // ═══════════════════════════════════════
 // LANGUAGE SYSTEM (বাংলা / English)
 // ═══════════════════════════════════════
-let currentLang = localStorage.getItem('app_lang') || 'bn'; // 'bn' or 'en'
+let currentLang = localStorage.getItem('app_lang') || 'en'; // 'bn' or 'en'
 
 const TRANSLATIONS = {
   bn: {
@@ -3820,6 +4339,15 @@ function refreshLanguageSensitiveUi() {
   if (document.body.classList.contains('orders-active')) {
     try { renderOrders(); } catch(_) {}
   }
+  // If the Account modal is currently open, re-render its dynamic content
+  // so every label / button / status pill flips to the new language too.
+  try {
+    const accModal = document.getElementById('accountModal');
+    if (accModal && accModal.classList.contains('open') && typeof refreshAccountModalContent === 'function') {
+      refreshAccountModalContent();
+      try { populateAccountModalProfile(); } catch(_){}
+    }
+  } catch(_) {}
 }
 
 function toggleLanguage() {
@@ -3914,11 +4442,13 @@ const UI_TEXT_TO_EN = {
   'লগইন করো': 'Login',
   'অ্যাকাউন্ট তৈরি করো': 'Create account',
   'রেজিস্টার করো': 'Register',
-  'তোমার username/email ও password দিয়ে লগইন করো': 'Login with your username/email and password',
-  'নতুন username + email + password দিয়ে রেজিস্ট্রেশন করো': 'Register with a username, email and password',
+  'তোমার email ও password দিয়ে লগইন করো': 'Login with your email and password',
+  'তোমার email + password দিয়ে নতুন অ্যাকাউন্ট খোলো': 'Sign up with your email and password',
   'Username': 'Username',
   'বা Email': 'or Email',
   'Email': 'Email',
+  'অপেক্ষা করো...': 'Please wait...',
+  'যেমন: ratul অথবা you@email.com': 'you@email.com',
   'Password': 'Password',
   'Password ভুলে গেছ?': 'Forgot password?',
   'নতুন ব্যবহারকারী?': 'New user?',
@@ -3953,6 +4483,8 @@ const UI_TEXT_TO_EN = {
   'আমি নিয়েছি': 'I Took',
   'কাকে দিয়েছি': 'Who I Gave',
   'কার কাছে নিয়েছি': 'Who I Took',
+  '📤 কাকে দিয়েছি': '📤 Who I Gave',
+  '📥 কার কাছে নিয়েছি': '📥 Who I Took',
   'নেট পজিশন': 'Net Position',
   'নাম *': 'Name *',
   'টাকা *': 'Amount *',
@@ -4056,7 +4588,46 @@ const UI_TEXT_TO_EN = {
   'খুব দুর্বল': 'Very weak',
   'সকাল ৭টায় উঠুন': 'Wake up at 7 AM',
   '৩০ মিনিট ব্যায়াম': '30 minutes exercise',
-  'রাতে বই পড়া': 'Read at night'
+  'রাতে বই পড়া': 'Read at night',
+  '+ যোগ': '+ Add',
+  '+ যোগ করো': '+ Add',
+  '+ নতুন': '+ New',
+  '+ নতুন অর্ডার': '+ New Order',
+  'Permanent task ম্যানেজ করো': 'Manage permanent tasks',
+  'এই দিনের কোনো খরচ নেই।': 'No expenses for this day.',
+  'কাউকে ধার দেননি।': 'No loans given to anyone.',
+  'কারো কাছে ধার নেননি।': 'No loans taken from anyone.',
+  'কোনো note নেই — উপরে থেকে নতুন note যোগ করো': 'No notes yet — add a new note from above',
+  'লক্ষ্য (গ্লাস):': 'Goal (glasses):',
+  'লক্ষ্য পূরণ! 🎉': 'Goal reached! 🎉',
+  'মহান মে দিবস': 'May Day',
+  'রবি': 'Sun',
+  'সোম': 'Mon',
+  'মঙ্গ': 'Tue',
+  'মঙ্গল': 'Tue',
+  'বুধ': 'Wed',
+  'বৃহঃ': 'Thu',
+  'শুক্র': 'Fri',
+  'শনি': 'Sat',
+  'রবিবার': 'Sunday',
+  'সোমবার': 'Monday',
+  'মঙ্গলবার': 'Tuesday',
+  'বুধবার': 'Wednesday',
+  'বৃহস্পতিবার': 'Thursday',
+  'শুক্রবার': 'Friday',
+  'শনিবার': 'Saturday',
+  'মুহাররম': 'Muharram',
+  'সফর': 'Safar',
+  'রবিউল আউয়াল': 'Rabi al-Awwal',
+  'রবিউস সানি': 'Rabi al-Thani',
+  'জমাদিউল আউয়াল': 'Jumada al-Awwal',
+  'জমাদিউস সানি': 'Jumada al-Thani',
+  'রজব': 'Rajab',
+  'শাবান': "Sha'ban",
+  'রমজান': 'Ramadan',
+  'শাওয়াল': 'Shawwal',
+  'জিলকদ': "Dhu al-Qi'dah",
+  'জিলহজ্জ': 'Dhu al-Hijjah'
 };
 
 const UI_PLACEHOLDER_TO_EN = {
@@ -4206,7 +4777,7 @@ function applyLanguage() {
   setTextIfFound('#ordersDesktopBtn', '📊 Orders', '📊 Orders');
   setTextIfFound('#authForgotLink', 'Password ভুলে গেছ?', 'Forgot password?');
   setTextIfFound('#authTitle', authIsRegisterMode ? 'অ্যাকাউন্ট তৈরি করো' : 'লগইন করো', authIsRegisterMode ? 'Create account' : 'Login');
-  setTextIfFound('#authSubtitle', authIsRegisterMode ? 'নতুন username + email + password দিয়ে রেজিস্ট্রেশন করো' : 'তোমার username/email ও password দিয়ে লগইন করো', authIsRegisterMode ? 'Register with a new username, email and password' : 'Login with your username/email and password');
+  setTextIfFound('#authSubtitle', authIsRegisterMode ? 'তোমার email + password দিয়ে নতুন অ্যাকাউন্ট খোলো' : 'তোমার email ও password দিয়ে লগইন করো', authIsRegisterMode ? 'Sign up with your email and password' : 'Login with your email and password');
   setTextIfFound('#authBtn', authIsRegisterMode ? 'রেজিস্টার করো' : 'লগইন', authIsRegisterMode ? 'Register' : 'Login');
   const authToggle = document.getElementById('authToggle');
   if (authToggle) {
@@ -4343,9 +4914,14 @@ function updateBazarBanner() {
 
   const items = getBazarItemsSafe();
   const pending = items.filter(i => !i.done);
-  const shouldShow = window.matchMedia('(max-width: 600px)').matches && pending.length > 0;
+  // Wider breakpoint (≤ 900px) covers most phones AND smaller tablets so the
+  // pending-bazar reminder is never hidden because the device reports a
+  // slightly larger CSS viewport (e.g. landscape, Android WebView, foldables).
+  const isMobileViewport = window.matchMedia('(max-width: 900px)').matches;
+  const shouldShow = isMobileViewport && pending.length > 0;
 
   banner.classList.toggle('is-visible', shouldShow);
+  document.body.classList.toggle('has-bazar-banner', shouldShow);
   if (!shouldShow) {
     banner.style.display = 'none';
     return;
@@ -4674,27 +5250,27 @@ function switchAuthMode() {
   const pwWrap = document.getElementById('pwStrengthWrap');
   const userCheck = document.getElementById('usernameCheck');
   const ordersOptRow = document.getElementById('authOrdersOptRow');
+  // The legacy "separate email row" is no longer shown — the main input is
+  // already the email. Hide it permanently.
+  if (emailRow) emailRow.style.display = 'none';
+  if (userCheck) userCheck.style.display = 'none';
   if (authIsRegisterMode) {
     document.getElementById('authTitle').textContent = 'অ্যাকাউন্ট তৈরি করো';
-    document.getElementById('authSubtitle').textContent = 'নতুন username + email + password দিয়ে রেজিস্ট্রেশন করো';
+    document.getElementById('authSubtitle').textContent = 'তোমার email + password দিয়ে নতুন অ্যাকাউন্ট খোলো';
     document.getElementById('authBtn').textContent = 'রেজিস্টার করো';
     document.getElementById('authToggle').innerHTML = 'আগে থেকে অ্যাকাউন্ট আছে? <a onclick="switchAuthMode()">লগইন করো</a>';
-    if (emailRow) emailRow.style.display = '';
     if (ordersOptRow) ordersOptRow.style.display = '';
     if (forgotLink) forgotLink.style.display = 'none';
     if (pwWrap) pwWrap.classList.add('show');
     updatePasswordStrengthUI();
-    checkUsernameAvailabilityFromInput();
   } else {
     document.getElementById('authTitle').textContent = 'লগইন করো';
-    document.getElementById('authSubtitle').textContent = 'তোমার username/email ও password দিয়ে লগইন করো';
+    document.getElementById('authSubtitle').textContent = 'তোমার email ও password দিয়ে লগইন করো';
     document.getElementById('authBtn').textContent = 'লগইন';
     document.getElementById('authToggle').innerHTML = 'নতুন ব্যবহারকারী? <a onclick="switchAuthMode()">অ্যাকাউন্ট তৈরি করো</a>';
-    if (emailRow) emailRow.style.display = 'none';
     if (ordersOptRow) ordersOptRow.style.display = 'none';
     if (forgotLink) forgotLink.style.display = '';
     if (pwWrap) pwWrap.classList.remove('show');
-    if (userCheck) userCheck.classList.remove('show');
   }
   hideAuthError();
   applyLanguage();
@@ -4910,12 +5486,18 @@ async function toggleOrdersOption() {
   try { await saveOrdersOptToFirebase(currentUser, next); } catch(_){}
   // Refresh the Account modal row so its label reflects the new state.
   const ordersStatus = document.getElementById('accModalOrdersStatus');
-  if (ordersStatus) ordersStatus.textContent = next ? '✓ চালু আছে' : '🚫 বন্ধ আছে';
+  if (ordersStatus) ordersStatus.textContent = next
+    ? langText('✓ চালু আছে', '✓ Enabled')
+    : langText('🚫 বন্ধ আছে', '🚫 Disabled');
   if (ordersBtn) {
-    ordersBtn.textContent = next ? 'বন্ধ করো' : 'চালু করো';
+    ordersBtn.textContent = next
+      ? langText('বন্ধ করো', 'Disable')
+      : langText('চালু করো', 'Enable');
     ordersBtn.dataset.next = next ? '0' : '1';
   }
-  showToast(next ? '✅ Orders option চালু' : '🚫 Orders option বন্ধ');
+  showToast(next
+    ? langText('✅ Orders option চালু', '✅ Orders option enabled')
+    : langText('🚫 Orders option বন্ধ', '🚫 Orders option disabled'));
 }
 
 function _formatDateShort(ts) {
@@ -4934,26 +5516,36 @@ async function populateAccountModalProfile() {
   const u = currentUser || '';
   nameText.textContent = u || '-';
   avatar.textContent = u ? u.charAt(0).toUpperCase() : '?';
-  roleBadge.textContent = 'User';
+  roleBadge.textContent = langText('ইউজার', 'User');
   roleBadge.className = 'profile-role-badge';
-  metaRow.innerHTML = '<span class="meta-item"><span class="spinner-inline"></span>লোড হচ্ছে...</span>';
+  metaRow.innerHTML = '<span class="meta-item"><span class="spinner-inline"></span>'
+    + langText('লোড হচ্ছে...', 'Loading...') + '</span>';
 
   const meta = await loadUserProfileMeta(u);
   if (meta) {
     if (meta.role && meta.role !== 'user') {
-      roleBadge.textContent = String(meta.role).charAt(0).toUpperCase() + String(meta.role).slice(1);
-      if (meta.role === 'admin' || meta.role === 'owner') {
+      const role = String(meta.role);
+      const cap = role.charAt(0).toUpperCase() + role.slice(1);
+      const roleMap = {
+        admin:  langText('অ্যাডমিন', 'Admin'),
+        owner:  langText('মালিক', 'Owner'),
+        moderator: langText('মডারেটর', 'Moderator'),
+      };
+      roleBadge.textContent = roleMap[role] || cap;
+      if (role === 'admin' || role === 'owner') {
         roleBadge.className = 'profile-role-badge admin';
       }
     }
     const items = [];
     const c = _formatDateShort(meta.createdAt);
-    if (c) items.push('<span class="meta-item">📅 ' + (currentLang === 'en' ? 'Joined: ' : 'যোগদান: ') + c + '</span>');
+    if (c) items.push('<span class="meta-item">📅 ' + langText('যোগদান: ', 'Joined: ') + c + '</span>');
     const l = _formatDateShort(meta.lastLogin);
-    if (l) items.push('<span class="meta-item">⏱️ ' + (currentLang === 'en' ? 'Last login: ' : 'শেষ লগইন: ') + l + '</span>');
-    metaRow.innerHTML = items.join('') || '<span class="meta-item">' + (currentLang === 'en' ? 'No information found' : 'তথ্য পাওয়া যায়নি') + '</span>';
+    if (l) items.push('<span class="meta-item">⏱️ ' + langText('শেষ লগইন: ', 'Last login: ') + l + '</span>');
+    metaRow.innerHTML = items.join('') || '<span class="meta-item">'
+      + langText('তথ্য পাওয়া যায়নি', 'No information found') + '</span>';
   } else {
-    metaRow.innerHTML = '<span class="meta-item">' + (currentLang === 'en' ? 'No information found' : 'তথ্য পাওয়া যায়নি') + '</span>';
+    metaRow.innerHTML = '<span class="meta-item">'
+      + langText('তথ্য পাওয়া যায়নি', 'No information found') + '</span>';
   }
   applyLanguage();
 }
@@ -4973,71 +5565,63 @@ async function handleAuth() {
   hideAuthError();
   const rawId = document.getElementById('authUsername').value.trim();
   const password = document.getElementById('authPassword').value;
-  const realEmail = (document.getElementById('authEmail') || {}).value || '';
 
-  if (!rawId) { showAuthError('Username বা email দাও'); return; }
-  if (!password || password.length < 6) { showAuthError('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে'); return; }
+  if (!rawId) {
+    showAuthError(langText('Email দাও', 'Please enter your email'));
+    return;
+  }
+  if (!password || password.length < 6) {
+    showAuthError(langText('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে', 'Password must be at least 6 characters'));
+    return;
+  }
 
   let username, email;
   if (rawId.includes('@')) {
-    // User typed an email directly.
-    if (!isValidEmail(rawId)) { showAuthError('সঠিক email দাও'); return; }
+    // Standard email-based login / signup.
+    if (!isValidEmail(rawId)) {
+      showAuthError(langText('সঠিক email দাও', 'Please enter a valid email'));
+      return;
+    }
     email = rawId.toLowerCase();
     username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '') || 'user';
+    // Pad to minimum length for username so claim transactions don't reject it.
+    if (username.length < 3) username = (username + '_user').slice(0, 24);
+    if (username.length > 24) username = username.slice(0, 24);
   } else {
-    // Plain username.
+    // Legacy fallback: a few existing users have username-only accounts (no
+    // real email). The UI shows "Email" only, but we still try to resolve a
+    // bare username so old accounts keep working. New signups always require
+    // a valid email.
     username = rawId.toLowerCase().replace(/[^a-z0-9_]/g, '');
-    if (!username) { showAuthError('সঠিক username দাও (শুধু ইংরেজি অক্ষর ও সংখ্যা)'); return; }
-    if (!authIsRegisterMode) {
-      // LOGIN mode: try to find the real email this username is linked to.
-      // We saved this mapping at signup / on previous successful logins.
-      // If the mapping is missing but the username IS claimed by an account,
-      // tell the user to log in with email once — we'll backfill the mapping
-      // automatically and future logins-by-username will work.
-      try {
-        await ensureFirebaseApp();
-        const looked = await lookupUsernameEmail(username);
-        if (looked) {
-          email = looked;
-        } else {
-          const owner = await readUsernameOwner(username);
-          if (owner) {
-            showAuthError('এই username এর email আমাদের কাছে save নেই। একবার তোমার Email/Gmail দিয়ে login করো — তারপর থেকে username দিয়েই login করা যাবে।');
-            return;
-          }
-        }
-      } catch(_){}
+    if (!username) {
+      showAuthError(langText('সঠিক email দাও', 'Please enter a valid email'));
+      return;
     }
     if (authIsRegisterMode) {
-      // Stricter validation only for new accounts (length, reserved names, etc.)
-      // Existing accounts may have looser usernames so keep login lenient.
-      const v = validateUsername(rawId);
-      if (!v.ok) {
-        let msg = 'সঠিক username দাও';
-        if (v.code === 'too_short') msg = 'Username কমপক্ষে ৩ অক্ষরের হতে হবে';
-        else if (v.code === 'too_long') msg = 'Username ২৪ অক্ষরের বেশি হতে পারবে না';
-        else if (v.code === 'invalid_chars') msg = 'Username এ শুধু a-z, 0-9, _ ব্যবহার করো';
-        else if (v.code === 'reserved') msg = 'Username সংরক্ষিত — অন্য নাম নিবেছা করো';
-        showAuthError(msg);
-        return;
-      }
-      username = v.sanitized;
-      // Real email is required so password reset works.
-      const e = realEmail.trim().toLowerCase();
-      if (!e || !isValidEmail(e)) {
-        showAuthError('Password reset এর জন্য একটা valid email দাও');
-        return;
-      }
-      email = e;
-    } else {
-      // Legacy login fallback for existing username-only accounts.
-      email = username + '@dailydashboard.app';
+      showAuthError(langText('Sign-up এর জন্য একটা valid email দাও', 'Please enter a valid email to sign up'));
+      return;
     }
+    // LOGIN mode: try to find the real email this username is linked to.
+    try {
+      await ensureFirebaseApp();
+      const looked = await lookupUsernameEmail(username);
+      if (looked) {
+        email = looked;
+      } else {
+        const owner = await readUsernameOwner(username);
+        if (owner) {
+          showAuthError(langText('এই account এর email আমাদের কাছে save নেই। একবার তোমার Gmail দিয়ে login করো।', "This account has no saved email. Please log in once with your Gmail."));
+          return;
+        }
+      }
+    } catch(_){}
+    // Final fallback for legacy <u>@dailydashboard.app accounts.
+    if (!email) email = username + '@dailydashboard.app';
   }
 
   const btn = document.getElementById('authBtn');
   btn.disabled = true;
-  btn.textContent = 'অপেক্ষা করো...';
+  btn.textContent = langText('অপেক্ষা করো...', 'Please wait...');
 
   try {
     await ensureFirebaseApp();
@@ -5157,11 +5741,15 @@ async function initFirebaseAfterAuth(user) {
         else localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
       });
       reloadAll();
+      // Force-refresh the bazar pending banner on every Firebase push so phones
+      // that just synced cross-device updates always see the reminder.
+      try { updateBazarBanner(); } catch(_) {}
       setSyncStatus('online');
     });
     setSyncStatus('online');
     showToast('✅ ' + currentUser + ' — sync চালু!');
     reloadAll();
+    try { updateBazarBanner(); } catch(_) {}
   } catch(e) { console.error(e); setSyncStatus('error'); showToast('❌ Firebase connect হয়নি'); }
 }
 
@@ -5269,47 +5857,68 @@ async function saveUsername() {}
 
 function openAccountModal() {
   if (!fbCurrentAuthUser) {
-    showToast('আগে লগইন করো');
+    showToast(langText('আগে লগইন করো', 'Please log in first'));
     return;
   }
+  refreshAccountModalContent();
+  document.getElementById('accountModal').classList.add('open');
+  applyLanguage();
+  // Load profile meta (createdAt / lastLogin / role) async so the modal
+  // appears instantly and meta fills in once it's read.
+  try { populateAccountModalProfile(); } catch(_) {}
+}
+
+// Rebuild every dynamic string in the Account modal using the current
+// language. Called both when the modal first opens and whenever the user
+// toggles the language while the modal is still open.
+function refreshAccountModalContent() {
+  if (!fbCurrentAuthUser) return;
   const u = fbCurrentAuthUser;
-  document.getElementById('accModalUsername').textContent = currentUser || '-';
+  const usernameEl = document.getElementById('accModalUsername');
+  if (usernameEl) usernameEl.textContent = currentUser || '-';
 
   const emailEl = document.getElementById('accModalEmail');
-  const email = u.email || '';
-  const isLegacy = email.endsWith('@dailydashboard.app');
-  if (!email) {
-    emailEl.textContent = '(set করা নেই)';
-    emailEl.classList.add('muted');
-  } else if (isLegacy) {
-    emailEl.innerHTML = email + ' <span style="font-size:10px;color:var(--text5);font-weight:400">(legacy — change করো)</span>';
-    emailEl.classList.remove('muted');
-  } else {
-    emailEl.textContent = email;
-    emailEl.classList.remove('muted');
+  if (emailEl) {
+    const email = u.email || '';
+    const isLegacy = email.endsWith('@dailydashboard.app');
+    if (!email) {
+      emailEl.textContent = langText('(set করা নেই)', '(not set)');
+      emailEl.classList.add('muted');
+    } else if (isLegacy) {
+      const tagLabel = langText('legacy — change করো', 'legacy — please change');
+      emailEl.innerHTML = email + ' <span style="font-size:10px;color:var(--text5);font-weight:400">(' + tagLabel + ')</span>';
+      emailEl.classList.remove('muted');
+    } else {
+      emailEl.textContent = email;
+      emailEl.classList.remove('muted');
+    }
   }
 
-  // Provider badge
+  // Provider badge — labels are language-neutral, so just set as-is.
   const provEl = document.getElementById('accModalProvider');
-  const pid = getProviderId();
-  if (pid === 'google.com') {
-    provEl.className = 'account-provider-badge google';
-    provEl.textContent = '🟦 Google';
-  } else {
-    provEl.className = 'account-provider-badge email';
-    provEl.textContent = '✉️ Email + Password';
+  if (provEl) {
+    const pid = getProviderId();
+    if (pid === 'google.com') {
+      provEl.className = 'account-provider-badge google';
+      provEl.textContent = '🟦 Google';
+    } else {
+      provEl.className = 'account-provider-badge email';
+      provEl.textContent = '✉️ Email + Password';
+    }
   }
 
-  // Disable change-password for non-password users
+  // Disable change-password for non-password users.
   const cpBtn = document.getElementById('accChangePasswordBtn');
-  if (isPasswordProvider()) {
-    cpBtn.disabled = false;
-    cpBtn.textContent = 'পরিবর্তন';
-    cpBtn.title = '';
-  } else {
-    cpBtn.disabled = true;
-    cpBtn.textContent = 'Google managed';
-    cpBtn.title = 'Google account এর password Google নিজেই manage করে।';
+  if (cpBtn) {
+    if (isPasswordProvider()) {
+      cpBtn.disabled = false;
+      cpBtn.textContent = langText('পরিবর্তন', 'Change');
+      cpBtn.title = '';
+    } else {
+      cpBtn.disabled = true;
+      cpBtn.textContent = langText('Google managed', 'Google managed');
+      cpBtn.title = langText('Google account এর password Google নিজেই manage করে।', 'Google manages your Google account password.');
+    }
   }
 
   // Orders opt-in row — reflect the current state and wire up the toggle.
@@ -5317,29 +5926,62 @@ function openAccountModal() {
   const ordersToggleBtn = document.getElementById('accOrdersToggleBtn');
   if (ordersStatus && ordersToggleBtn) {
     const enabled = localStorage.getItem('dashboard_orders_enabled') !== '0';
-    ordersStatus.textContent = enabled ? '✓ চালু আছে' : '🚫 বন্ধ আছে';
-    ordersToggleBtn.textContent = enabled ? 'বন্ধ করো' : 'চালু করো';
+    ordersStatus.textContent = enabled
+      ? langText('✓ চালু আছে', '✓ Enabled')
+      : langText('🚫 বন্ধ আছে', '🚫 Disabled');
+    ordersToggleBtn.textContent = enabled
+      ? langText('বন্ধ করো', 'Disable')
+      : langText('চালু করো', 'Enable');
     ordersToggleBtn.dataset.next = enabled ? '0' : '1';
   }
 
-  // Email change is supported for password users; Google users would need to
-  // unlink first which is out of scope.
+  // Email change is supported for password users; Google users would need
+  // to unlink first which is out of scope.
   const ceBtn = document.getElementById('accChangeEmailBtn');
-  if (isPasswordProvider()) {
-    ceBtn.disabled = false;
-    ceBtn.textContent = 'পরিবর্তন';
-    ceBtn.title = '';
-  } else {
-    ceBtn.disabled = true;
-    ceBtn.textContent = 'Google managed';
-    ceBtn.title = 'Google account এর email Google account থেকে পরিবর্তন করো।';
+  if (ceBtn) {
+    if (isPasswordProvider()) {
+      ceBtn.disabled = false;
+      ceBtn.textContent = langText('পরিবর্তন', 'Change');
+      ceBtn.title = '';
+    } else {
+      ceBtn.disabled = true;
+      ceBtn.textContent = langText('Google managed', 'Google managed');
+      ceBtn.title = langText('Google account এর email Google account থেকে পরিবর্তন করো।', 'Change your email from your Google account directly.');
+    }
   }
 
-  document.getElementById('accountModal').classList.add('open');
-  applyLanguage();
-  // Load profile meta (createdAt / lastLogin / role) async so the modal
-  // appears instantly and meta fills in once it's read.
-  try { populateAccountModalProfile(); } catch(_) {}
+  // Section labels & headings inside the account modal that aren't covered
+  // by the generic dictionary walker because they sit inside `.account-row`
+  // markup specific to this modal.
+  const fieldLabels = [
+    ['#accountModal > .modal > h2', '👤 অ্যাকাউন্ট ডিটেইলস', '👤 Account Details'],
+    ['#accountModal > .modal > p',  'তোমার অ্যাকাউন্ট সংক্রান্ত সব তথ্য এখানে', 'All your account details are here'],
+  ];
+  fieldLabels.forEach(([sel, bn, en]) => {
+    const el = document.querySelector(sel);
+    if (el) el.textContent = langText(bn, en);
+  });
+
+  // Static row labels (Username, Email, Password, Sign-in Method, Orders Section)
+  document.querySelectorAll('#accountModal .account-row-label').forEach(el => {
+    const map = {
+      'Username': ['Username', 'Username'],
+      'Email': ['Email', 'Email'],
+      'Password': ['Password', 'Password'],
+      'Sign-in Method': ['Sign-in Method', 'Sign-in Method'],
+      '📊 Orders Section': ['📊 Orders Section', '📊 Orders Section'],
+    };
+    const txt = (el.textContent || '').trim();
+    if (map[txt]) el.textContent = langText(map[txt][0], map[txt][1]);
+  });
+
+  // Close + logout buttons inside the modal footer.
+  document.querySelectorAll('#accountModal .modal-btns .btn-secondary').forEach(el => {
+    el.textContent = langText('বন্ধ', 'Close');
+  });
+  document.querySelectorAll('#accountModal .modal-btns .account-row-action.danger').forEach(el => {
+    el.textContent = langText('🚪 লগ আউট', '🚪 Log out');
+  });
 }
 function closeAccountModal() {
   document.getElementById('accountModal').classList.remove('open');
@@ -5928,9 +6570,21 @@ const BD_HOLIDAYS = {
   '12-16':'বিজয় দিবস',
   '12-25':'বড়দিন',
 };
+const BD_HOLIDAYS_EN = {
+  '2-21': 'Language Martyrs Day & International Mother Language Day',
+  '3-17': "Father of the Nation's Birthday",
+  '3-26': 'Independence & National Day',
+  '4-14': 'Pohela Boishakh (Bengali New Year)',
+  '5-1':  'May Day',
+  '8-15': 'National Mourning Day',
+  '11-7': 'National Revolution & Solidarity Day',
+  '12-16':'Victory Day',
+  '12-25':'Christmas Day',
+};
 function getBdHoliday(date) {
   const key = (date.getMonth()+1)+'-'+date.getDate();
-  return BD_HOLIDAYS[key] || null;
+  const map = currentLang === 'en' ? BD_HOLIDAYS_EN : BD_HOLIDAYS;
+  return map[key] || null;
 }
 
 function buildDayPanelInto(panelEl, key) {
@@ -6004,6 +6658,7 @@ function buildDayPanelInto(panelEl, key) {
     wEl.style.cssText='font-size:13px;color:var(--text3);margin-top:8px';
     wEl.textContent=currentLang === 'en' ? '💧 Water: '+data.water+' glasses' : '💧 পানি: '+data.water+' গ্লাস'; panelEl.appendChild(wEl);
   }
+  try { applyLanguage(); } catch(_) {}
 }
 
 function showDayPanel(key) {
@@ -6020,7 +6675,8 @@ function buildTasksUI(opts, key) {
 
   const badge = document.getElementById(opts.badgeId);
   if (badge) {
-    if (isTodayDay) { badge.textContent='আজকে — '+dateLabel(key); badge.className='task-day-badge badge-today'; }
+    const todayLbl = currentLang === 'en' ? 'Today — ' : 'আজকে — ';
+    if (isTodayDay) { badge.textContent=todayLbl+dateLabel(key); badge.className='task-day-badge badge-today'; }
     else if (locked) { badge.textContent='🔒 '+dateLabel(key); badge.className='task-day-badge badge-locked'; }
     else if (isFutureDay) { badge.textContent='📅 '+dateLabel(key); badge.className='task-day-badge badge-future'; }
     else { badge.textContent='✏️ '+dateLabel(key)+' (24h)'; badge.className='task-day-badge badge-other'; }
@@ -6035,9 +6691,9 @@ function buildTasksUI(opts, key) {
   if (!dayTasks.length) {
     const empty = document.createElement('div');
     empty.style.cssText='font-size:13px;color:var(--text5);padding:8px 0';
-    if (locked) empty.textContent = 'এই দিনের কোনো task ছিল না।';
-    else if (isFutureDay) empty.textContent = '📅 এই দিনের জন্য task plan করো।';
-    else empty.textContent = 'কোনো task নেই।';
+    if (locked) empty.textContent = currentLang === 'en' ? 'There were no tasks for this day.' : 'এই দিনের কোনো task ছিল না।';
+    else if (isFutureDay) empty.textContent = currentLang === 'en' ? '📅 Plan tasks for this day.' : '📅 এই দিনের জন্য task plan করো।';
+    else empty.textContent = currentLang === 'en' ? 'No tasks.' : 'কোনো task নেই।';
     list.appendChild(empty);
   } else {
     dayTasks.forEach(t => {
@@ -6087,17 +6743,21 @@ function buildTasksUI(opts, key) {
   addArea.innerHTML = '';
   if (locked) {
     const notice = document.createElement('div'); notice.className='locked-notice';
-    notice.textContent='🔒 এই দিন lock হয়ে গেছে।';
+    notice.textContent = currentLang === 'en' ? '🔒 This day is locked.' : '🔒 এই দিন lock হয়ে গেছে।';
     addArea.appendChild(notice);
   } else {
     const wrap = document.createElement('div'); wrap.className='task-add'; wrap.style.marginTop='12px';
     const inp = document.createElement('input');
-    inp.placeholder = isFutureDay ? '📅 plan করো...' : isTodayDay ? 'নতুন task...' : 'গতকালের task...';
+    if (currentLang === 'en') {
+      inp.placeholder = isFutureDay ? '📅 Plan...' : isTodayDay ? 'New task...' : "Yesterday's task...";
+    } else {
+      inp.placeholder = isFutureDay ? '📅 plan করো...' : isTodayDay ? 'নতুন task...' : 'গতকালের task...';
+    }
     const sel = document.createElement('select');
     ['work','health','personal'].forEach((v,i) => {
       const o = document.createElement('option'); o.value=v; o.textContent=['Work','Health','Personal'][i]; sel.appendChild(o);
     });
-    const btn = document.createElement('button'); btn.className='btn-add'; btn.textContent='+ যোগ';
+    const btn = document.createElement('button'); btn.className='btn-add'; btn.textContent = currentLang === 'en' ? '+ Add' : '+ যোগ';
     btn.onclick = () => addTaskToDay(key, inp, sel);
     inp.addEventListener('keydown', e => { if(e.key==='Enter') addTaskToDay(key, inp, sel); });
     wrap.appendChild(inp); wrap.appendChild(sel); wrap.appendChild(btn);
@@ -6108,6 +6768,7 @@ function buildTasksUI(opts, key) {
 function renderTasksForDay(key) {
   buildTasksUI({ badgeId:'taskDayBadge', listId:'taskList', addAreaId:'taskAddArea' }, key);
   buildTasksUI({ badgeId:'d_taskDayBadge', listId:'d_taskList', addAreaId:'d_taskAddArea' }, key);
+  try { applyLanguage(); } catch(_) {}
 }
 
 function addTaskToDay(key, inp, sel) {
@@ -6165,7 +6826,7 @@ function buildPermanentTasksUI(opts) {
     o.textContent = ['Work','Health','Personal'][i]; sel.appendChild(o);
   });
   sel.value = 'personal';
-  const btn = document.createElement('button'); btn.className='btn-add'; btn.textContent='+ যোগ';
+  const btn = document.createElement('button'); btn.className='btn-add'; btn.textContent = currentLang === 'en' ? '+ Add' : '+ যোগ';
   const submit = () => addPermanentTask(inp, sel);
   btn.onclick = submit;
   inp.addEventListener('keydown', e => { if (e.key==='Enter') submit(); });
@@ -6175,6 +6836,7 @@ function buildPermanentTasksUI(opts) {
 
 function renderPermanentTasks() {
   buildPermanentTasksUI({ listId:'permList', addAreaId:'permAddArea' });
+  try { applyLanguage(); } catch(_) {}
 }
 
 function openPermModal() {
@@ -6257,7 +6919,7 @@ function buildWaterUI(opts, key) {
     badgeWrap.innerHTML = '';
     const bdg = document.createElement('span');
     bdg.className = 'water-day-badge ' + (isTodayDay?'badge-today':locked?'badge-locked':isFutureDay?'badge-future':'badge-other');
-    if (isTodayDay) bdg.textContent = '💧 আজকে — '+dateLabel(key);
+    if (isTodayDay) bdg.textContent = (currentLang === 'en' ? '💧 Today — ' : '💧 আজকে — ')+dateLabel(key);
     else if (locked) bdg.textContent = '🔒 '+dateLabel(key);
     else if (isFutureDay) bdg.textContent = '📅 '+dateLabel(key);
     else bdg.textContent = '✏️ '+dateLabel(key);
@@ -6271,7 +6933,7 @@ function buildWaterUI(opts, key) {
   if (isFutureDay) {
     const info = document.createElement('div');
     info.style.cssText='font-size:13px;color:var(--text3);padding:14px 0';
-    info.textContent = '📅 ভবিষ্যতের দিন।';
+    info.textContent = currentLang === 'en' ? '📅 Future day.' : '📅 ভবিষ্যতের দিন।';
     area.appendChild(info); return;
   }
 
@@ -6297,12 +6959,16 @@ function buildWaterUI(opts, key) {
 
   const info = document.createElement('div');
   info.className='water-info';
-  info.textContent=dayWater+'/'+goal+' গ্লাস — '+(dayWater>=goal?'লক্ষ্য পূরণ! 🎉':'আরো '+(goal-dayWater)+' গ্লাস বাকি');
+  if (currentLang === 'en') {
+    info.textContent = dayWater+'/'+goal+' glasses — '+(dayWater>=goal ? 'Goal reached! 🎉' : (goal-dayWater)+' more glasses to go');
+  } else {
+    info.textContent = dayWater+'/'+goal+' গ্লাস — '+(dayWater>=goal ? 'লক্ষ্য পূরণ! 🎉' : 'আরো '+(goal-dayWater)+' গ্লাস বাকি');
+  }
   area.appendChild(info);
 
   if (isTodayDay) {
     const goalRow = document.createElement('div'); goalRow.className='water-goal-row';
-    const gLabel = document.createElement('span'); gLabel.textContent='লক্ষ্য (গ্লাস):';
+    const gLabel = document.createElement('span'); gLabel.textContent = currentLang === 'en' ? 'Goal (glasses):' : 'লক্ষ্য (গ্লাস):';
     const gInp = document.createElement('input'); gInp.type='number'; gInp.value=goal; gInp.min=4; gInp.max=16;
     gInp.onchange = () => {
       waterGoal = parseInt(gInp.value)||8;
@@ -6318,6 +6984,7 @@ function buildWaterUI(opts, key) {
 function renderWaterForDay(key) {
   buildWaterUI({ badgeWrapId:'waterDayBadgeWrap', areaId:'waterArea' }, key);
   buildWaterUI({ badgeWrapId:'d_waterDayBadgeWrap', areaId:'d_waterArea' }, key);
+  try { applyLanguage(); } catch(_) {}
 }
 
 function toggleSeeAllExpense() {
@@ -6413,12 +7080,15 @@ function renderExpensesForDay(key) {
     if (!dayExpenses.length) {
       const empty = document.createElement('div');
       empty.style.cssText='font-size:13px;color:var(--text5);padding:6px 0';
-      empty.textContent = 'এই দিনের কোনো খরচ নেই।';
+      empty.textContent = currentLang === 'en' ? 'No expenses for this day.' : 'এই দিনের কোনো খরচ নেই।';
       listEl.appendChild(empty);
     }
 
     totalEl.textContent='৳'+total.toLocaleString();
-    if (totalLabel) totalLabel.textContent = isTodayDay?'আজকের মোট':dateLabel(key)+' মোট';
+    if (totalLabel) {
+      if (currentLang === 'en') totalLabel.textContent = isTodayDay ? "Today's total" : dateLabel(key) + ' total';
+      else totalLabel.textContent = isTodayDay ? 'আজকের মোট' : dateLabel(key) + ' মোট';
+    }
   });
 
   renderMonthlyTotal();
@@ -6482,10 +7152,13 @@ function buildNotifsInto(area) {
 function renderNotifs() {
   const a1 = document.getElementById('notifArea'); if (a1) buildNotifsInto(a1);
   const a2 = document.getElementById('d_notifArea'); if (a2) buildNotifsInto(a2);
+  try { applyLanguage(); } catch(_) {}
 }
 
 const MOOD_COLORS = { 5:'#4cc99a', 4:'#378ADD', 3:'#d4a04a', 2:'#D85A30', 1:'#E24B4A' };
-const MOOD_LABELS = { 5:'দারুণ', 4:'ভালো', 3:'মোটামুটি', 2:'একটু খারাপ', 1:'খুব খারাপ' };
+const MOOD_LABELS_BN = { 5:'দারুণ', 4:'ভালো', 3:'মোটামুটি', 2:'একটু খারাপ', 1:'খুব খারাপ' };
+const MOOD_LABELS_EN = { 5:'Great', 4:'Good', 3:'OK', 2:'A bit off', 1:'Very bad' };
+const MOOD_LABELS = new Proxy({}, { get(_, k){ return (currentLang === 'en' ? MOOD_LABELS_EN : MOOD_LABELS_BN)[k]; } });
 
 function getMoodData() { const raw = localStorage.getItem('mood_data'); return raw ? JSON.parse(raw) : {}; }
 function setMoodData(data) { localStorage.setItem('mood_data', JSON.stringify(data)); pushToFirebase(); }
@@ -6501,11 +7174,13 @@ function setMood(level, emoji) {
 function renderMoodTracker() {
   const data = getMoodData();
   const todayMood = data[todayKey];
+  const todayLabel = currentLang === 'en' ? 'Today' : 'আজকে';
+  const pickLabel = currentLang === 'en' ? "Choose today's mood" : 'আজকের mood বেছে নাও';
   ['moodTodayLabel','d_moodTodayLabel'].forEach(id => {
     const lbl = document.getElementById(id);
     if (!lbl) return;
-    if (todayMood) lbl.innerHTML = 'আজকে: <span style="font-size:18px">' + todayMood.emoji + '</span> <span style="color:' + MOOD_COLORS[todayMood.level] + ';font-weight:600;font-size:12px">' + MOOD_LABELS[todayMood.level] + '</span>';
-    else lbl.textContent = 'আজকের mood বেছে নাও';
+    if (todayMood) lbl.innerHTML = todayLabel + ': <span style="font-size:18px">' + todayMood.emoji + '</span> <span style="color:' + MOOD_COLORS[todayMood.level] + ';font-weight:600;font-size:12px">' + MOOD_LABELS[todayMood.level] + '</span>';
+    else lbl.textContent = pickLabel;
   });
   document.querySelectorAll('.mood-btn').forEach(btn => {
     const lvl = parseInt(btn.dataset.mood);
@@ -6515,7 +7190,10 @@ function renderMoodTracker() {
     const chart = document.getElementById(id);
     if (!chart) return;
     chart.innerHTML = '';
-    const dayNames7 = ['রবি','সোম','মঙ্গ','বুধ','বৃহঃ','শুক্র','শনি'];
+    const dayNames7Bn = ['রবি','সোম','মঙ্গ','বুধ','বৃহঃ','শুক্র','শনি'];
+    const dayNames7En = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const dayNames7 = currentLang === 'en' ? dayNames7En : dayNames7Bn;
+    const todayShort = currentLang === 'en' ? 'Today' : 'আজ';
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
       d.setDate(today.getDate() - i);
@@ -6528,7 +7206,7 @@ function renderMoodTracker() {
       const heightPx = mood ? Math.round(mood.level * 7) : 4;
       barEl.style.cssText = 'height:' + heightPx + 'px;background:' + (mood ? MOOD_COLORS[mood.level] : '#2a2a2a') + ';border-radius:4px;width:100%';
       const dayEl = document.createElement('div'); dayEl.className = 'mood-day-lbl';
-      dayEl.textContent = i === 0 ? 'আজ' : dayNames7[d.getDay()];
+      dayEl.textContent = i === 0 ? todayShort : dayNames7[d.getDay()];
       wrap.appendChild(emojiEl); wrap.appendChild(barEl); wrap.appendChild(dayEl);
       chart.appendChild(wrap);
     }
@@ -6745,11 +7423,14 @@ function renderLoanList() {
     });
     if (totalCount > 3) {
       const seeAllBtn = document.createElement('button'); seeAllBtn.className = 'loan-see-all';
-      seeAllBtn.textContent = showAll ? '🔼 কম দেখাও' : '🔽 আরো ' + hiddenCount + ' টা দেখাও';
+      seeAllBtn.textContent = showAll
+        ? (currentLang === 'en' ? '🔼 Show less' : '🔼 কম দেখাও')
+        : (currentLang === 'en' ? '🔽 Show ' + hiddenCount + ' more' : '🔽 আরো ' + hiddenCount + ' টা দেখাও');
       seeAllBtn.onclick = () => toggleSeeAll(currentLoanTab);
       listEl.appendChild(seeAllBtn);
     }
   });
+  try { applyLanguage(); } catch(_) {}
 }
 
 // ═══════════════════════════════════════════
@@ -7101,18 +7782,20 @@ function renderNotes() {
     visibleOthers = others.slice(0, remaining);
   }
 
+  const isEn = currentLang === 'en';
   let html = '';
   if (!notes.length) {
-    html = '<div class="notes-empty"><div class="notes-empty-icon">📝</div><div>কোনো note নেই — উপরে থেকে নতুন note যোগ করো</div></div>';
+    const emptyText = isEn ? 'No notes yet — add a new note from above' : 'কোনো note নেই — উপরে থেকে নতুন note যোগ করো';
+    html = '<div class="notes-empty"><div class="notes-empty-icon">📝</div><div>' + emptyText + '</div></div>';
   } else {
     if (visiblePinned.length) {
-      html += '<div class="notes-section-label">📌 পিন করা</div>';
+      html += '<div class="notes-section-label">' + (isEn ? '📌 Pinned' : '📌 পিন করা') + '</div>';
       html += '<div class="notes-grid">';
       visiblePinned.forEach(n => { html += buildNoteCardHtml(n); });
       html += '</div>';
     }
     if (visibleOthers.length) {
-      if (visiblePinned.length) html += '<div class="notes-section-label">অন্যান্য</div>';
+      if (visiblePinned.length) html += '<div class="notes-section-label">' + (isEn ? 'Others' : 'অন্যান্য') + '</div>';
       html += '<div class="notes-grid">';
       visibleOthers.forEach(n => { html += buildNoteCardHtml(n); });
       html += '</div>';
@@ -7121,8 +7804,8 @@ function renderNotes() {
       const hidden = total - NOTES_VISIBLE_LIMIT;
       html += '<button type="button" class="notes-see-more" onclick="toggleNotesExpanded(event)">' +
         (notesExpanded
-          ? '▲ কম দেখাও'
-          : '▼ আরও ' + hidden + ' টি note দেখাও') +
+          ? (isEn ? '▲ Show less' : '▲ কম দেখাও')
+          : (isEn ? '▼ Show ' + hidden + ' more notes' : '▼ আরও ' + hidden + ' টি note দেখাও')) +
         '</button>';
     }
   }
@@ -7131,6 +7814,7 @@ function renderNotes() {
   if (el) el.innerHTML = html;
   const dEl = document.getElementById('d_notesList');
   if (dEl) dEl.innerHTML = html;
+  try { applyLanguage(); } catch(_) {}
 }
 
 // ═══════════════════════════════════════════
@@ -7939,7 +8623,13 @@ function _getHijriOffset(){
 }
 function _setHijriOffset(v){ localStorage.setItem('hijriOffset', String(v)); }
 
+const hijriMonthsEn = ['Muharram','Safar','Rabi al-Awwal','Rabi al-Thani','Jumada al-Awwal','Jumada al-Thani','Rajab',"Sha'ban",'Ramadan','Shawwal',"Dhu al-Qi'dah",'Dhu al-Hijjah'];
+
 function _formatHijriBn(day, monthNum, year){
+  if (currentLang === 'en') {
+    const m = hijriMonthsEn[monthNum-1] || '';
+    return day + ' ' + m + ' ' + year + ' AH';
+  }
   const m = hijriMonthsBn[monthNum-1] || '';
   return _bnDigits(day) + ' ' + m + ' ' + _bnDigits(year) + ' হিজরি';
 }
@@ -8693,6 +9383,19 @@ renderNotes();
 applyLanguage();
 // Update bazar banner on load (show if pending items exist)
 updateBazarBanner();
+
+// Keep the bazar pending banner in sync with every viewport / focus change so
+// it never gets stuck "missing" on phones — covers orientation switches,
+// tab returns, foldables, cross-tab edits, and Firebase pushes.
+window.addEventListener('resize', () => { try { updateBazarBanner(); } catch(_) {} });
+window.addEventListener('orientationchange', () => { try { updateBazarBanner(); } catch(_) {} });
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) { try { updateBazarBanner(); } catch(_) {} }
+});
+window.addEventListener('focus', () => { try { updateBazarBanner(); } catch(_) {} });
+window.addEventListener('storage', e => {
+  if (e && e.key === 'bazar_data') { try { updateBazarBanner(); } catch(_) {} }
+});
 
 ['loanDate','mLoanDate','d_loanDate'].forEach(id => {
   const el = document.getElementById(id);
