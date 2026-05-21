@@ -2466,15 +2466,14 @@
     color: #6aa8ff !important;
   }
 
-  /* ── Bazar Pending Banner — always-visible mobile reminder ── */
+  /* ── Bazar Pending Banner — inline reminder at the top of the page.
+     Sits at the top of the document flow and scrolls away with the page
+     (not sticky / fixed) so it doesn't follow the user while they scroll. */
   #bazarPendingBanner {
     display: none;
-    position: fixed;
-    top: calc(var(--header-h, 68px) + env(safe-area-inset-top, 0px));
-    left: 0;
-    right: 0;
-    z-index: 95;
-    padding: 0 12px;
+    position: relative;
+    z-index: 1;
+    padding: 10px 12px 0;
     pointer-events: none;
     animation: bannerSlideDown .4s cubic-bezier(.34,1.56,.64,1);
   }
@@ -2532,9 +2531,9 @@
   }
   .bazar-banner-btn:hover,
   .bazar-banner-btn:active { background: rgba(125,211,252,0.35); transform: translateY(-1px); }
-  /* Push the main content down by an approximate banner height so the first
-     section never sits underneath the fixed reminder. */
-  body.has-bazar-banner .main { padding-top: 56px; }
+  /* Banner is now inline (not fixed), so the main content no longer needs
+     extra top padding to clear it. */
+  body.has-bazar-banner .main { padding-top: 0; }
   @media (min-width: 901px) {
     body.has-bazar-banner .main { padding-top: 0; }
   }
@@ -3211,14 +3210,14 @@
     transition: transform .35s var(--ease-out), filter .35s var(--ease-out) !important;
   }
 
-  /* Mood buttons — playful smooth pop */
+  /* Mood buttons — playful smooth pop (toned-down glow) */
   .mood-btn {
     transition: transform .35s var(--ease-out), border-color .25s, background-color .25s, box-shadow .35s !important;
   }
   .mood-btn:hover { transform: translateY(-2px) scale(1.06); }
   .mood-btn:active { transform: scale(0.94); }
   .mood-btn.selected {
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.20), 0 10px 24px rgba(59,130,246,0.30);
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.18), 0 6px 14px rgba(59,130,246,0.18);
   }
 
   /* Calendar — soft hover with smooth tint */
@@ -3327,12 +3326,41 @@
   }
   a:hover, .auth-link:hover { opacity: 0.92; }
 
-  /* Subtle focus-visible ring for keyboard a11y */
-  button:focus-visible,
-  a:focus-visible {
-    outline: 2px solid rgba(96,165,250,0.65);
-    outline-offset: 2px;
-    border-radius: 6px;
+  /* Subtle focus-visible ring for KEYBOARD a11y only. The ring is suppressed
+     entirely on touch devices so tapping a tab / chip / nav item never
+     leaves a lingering “box” around it. */
+  @media (hover: hover) and (pointer: fine) {
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid rgba(96,165,250,0.65);
+      outline-offset: 2px;
+      border-radius: 6px;
+    }
+  }
+  @media (hover: none), (pointer: coarse) {
+    button:focus, button:focus-visible,
+    a:focus, a:focus-visible,
+    .nav-item:focus, .nav-item:focus-visible,
+    .tab:focus, .chip:focus, .filter:focus, .seg:focus,
+    .bazar-filter-chip:focus, .perm-chip-btn:focus,
+    .mood-btn:focus, .order-action-btn:focus,
+    [role="tab"]:focus, [role="button"]:focus {
+      outline: none !important;
+      box-shadow: none;
+    }
+    /* But preserve the selected/active visual treatments on those same
+       elements — only the lingering focus box is removed. */
+    .mood-btn.selected:focus, .mood-btn.active:focus, .mood-btn[aria-pressed="true"]:focus,
+    .tab.active:focus, .chip.active:focus, .filter.active:focus, .seg.active:focus,
+    .nav-item.active:focus, [data-active="true"]:focus {
+      box-shadow: revert;
+    }
+    /* Suppress the iOS tap highlight on every tappable element. */
+    a, button, [role="button"], .nav-item, .tab, .chip, .filter, .seg,
+    .bazar-filter-chip, .mood-btn, .perm-chip-btn, .order-action-btn,
+    .bazar-cb, .task-cb, .day-task-cb, .cal-day {
+      -webkit-tap-highlight-color: transparent;
+    }
   }
 
   /* Honor reduced motion */
@@ -3454,18 +3482,22 @@
     text-shadow: 0 0 10px rgba(255,255,255,0.6);
   }
 
-  /* Mood buttons — selected gets strong blue aura */
+  /* Mood buttons — selected gets a soft blue accent (no heavy aura) */
   .mood-btn.selected, .mood-btn.active, .mood-btn[aria-pressed="true"] {
     box-shadow:
-      0 0 0 2px rgba(96,165,250,0.65),
-      0 0 24px rgba(59,130,246,0.65),
-      0 0 50px rgba(125,211,252,0.40) !important;
+      0 0 0 1.5px rgba(96,165,250,0.40),
+      0 4px 10px rgba(59,130,246,0.18) !important;
   }
   .mood-btn {
     transition: transform .25s ease, box-shadow .3s ease, background .25s ease !important;
   }
   .mood-btn:hover {
-    box-shadow: 0 0 0 1px rgba(96,165,250,0.40), 0 0 18px rgba(59,130,246,0.35) !important;
+    box-shadow: 0 0 0 1px rgba(96,165,250,0.30), 0 2px 8px rgba(59,130,246,0.15) !important;
+  }
+  /* Make the emoji glyph itself flat — no text-shadow / glow on the face. */
+  .mood-btn, .mood-day-emoji {
+    text-shadow: none !important;
+    filter: none !important;
   }
 
   /* Water drops — every drop gets a subtle blue glow; filled drops glow brighter */
@@ -3497,13 +3529,21 @@
       inset 0 0 8px rgba(125,211,252,0.30) !important;
   }
 
-  /* Tab / chip / filter buttons selected → blue glow */
+  /* Tab / chip / filter buttons selected → soft blue glow halo only
+     (no crisp 1px ring — that read as a box around the active tab). */
   .tab.active, .chip.active, .filter.active, .seg.active,
   .nav-item.active, [data-active="true"] {
     box-shadow:
-      0 0 0 1px rgba(96,165,250,0.50),
-      0 0 16px rgba(59,130,246,0.45),
-      inset 0 0 12px rgba(59,130,246,0.10) !important;
+      0 0 18px rgba(59,130,246,0.40),
+      0 0 36px rgba(59,130,246,0.18) !important;
+    border-color: transparent !important;
+  }
+  /* Bottom-nav active item: the existing ::before radial halo + drop-shadow
+     on the icon already convey "active" — no rectangular outline needed. */
+  .bottom-nav .nav-item.active {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
   }
 
   /* Status / sync dot online — pulse blue glow */
@@ -3523,10 +3563,11 @@
       0 30px 80px rgba(0,0,0,0.70) !important;
   }
 
-  /* Icon emojis inside section labels and stat cards get a soft glow */
-  .sec-label span, .stat-num, .summary-num {
-    text-shadow: 0 0 14px rgba(96,165,250,0.50);
+  /* Stat cards keep a very subtle glow; emojis stay flat. */
+  .stat-num, .summary-num {
+    text-shadow: 0 0 10px rgba(96,165,250,0.30);
   }
+  .sec-label span { text-shadow: none; }
 
   /* Anchors / links — subtle blue text glow on hover */
   a {
@@ -3540,6 +3581,39 @@
   .total, .total-amt, .net-pos, .summary-num, .stat-num, .big-num,
   .amount-big, .amount-large {
     text-shadow: 0 0 14px rgba(96,165,250,0.45), 0 0 28px rgba(59,130,246,0.20);
+  }
+
+  /* ── Smoothness pass ─────────────────────────────────────────────
+     Hint to the browser which elements are about to animate, so iOS /
+     Safari composite them on the GPU instead of repainting. We keep this
+     list tight to avoid burning memory on cheap devices. Tap/active
+     feedback uses 3D translates so transforms run on the compositor. */
+  .modal, .toast, .nav-item .nav-icon,
+  .mood-btn:hover, .mood-btn:active, .mood-btn.selected,
+  .cal-day:hover, .cal-day.today,
+  .bottom-nav .nav-item.active {
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  /* Only the currently-active nav indicator + the open modal really need
+     will-change; applying it broadly costs memory on iOS. */
+  .modal, .bottom-nav .nav-item.active .nav-icon {
+    will-change: transform, opacity;
+  }
+  html, body {
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Slightly snappier easing across the board for a more app-like feel. */
+  :root {
+    --ease-app: cubic-bezier(.22,.61,.36,1);
+  }
+  .mood-btn, .nav-item, .nav-item .nav-icon,
+  .cal-day, .day, .tab, .chip, .filter, .seg,
+  .bazar-filter-chip, .bazar-item, .bazar-cb,
+  .task-cb, .day-task-cb, .card {
+    transition-timing-function: var(--ease-app) !important;
   }
 </style>
 </head>
