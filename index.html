@@ -9478,6 +9478,9 @@ function renderOrders() {
     return a._idx - b._idx;
   });
 
+  // Store for shift+click range selection (display-order aware)
+  currentDisplayList = displayList;
+
   if (!displayList.length && !orders.length) {
     emptyEl.style.display = 'block';
     tableWrap.style.display = 'none';
@@ -9580,15 +9583,22 @@ function sortOrdersByDayLeft() {
 }
 
 let lastCheckedOrderIdx = null;
+let lastCheckedOrderDisplayIdx = null;
+let currentDisplayList = [];
 
 function handleCheckboxClick(event, idx) {
   const cb = event.target;
-  if (event.shiftKey && lastCheckedOrderIdx !== null) {
-    // Shift+Click: select range
-    const start = Math.min(lastCheckedOrderIdx, idx);
-    const end = Math.max(lastCheckedOrderIdx, idx);
-    for (let i = start; i <= end; i++) {
-      selectedOrderIndices.add(i);
+  // Find the display position of the clicked item
+  const clickedDisplayIdx = currentDisplayList.findIndex(o => o._idx === idx);
+
+  if (event.shiftKey && lastCheckedOrderDisplayIdx !== null && clickedDisplayIdx !== -1) {
+    // Shift+Click: select range based on display order (respects current sort)
+    const start = Math.min(lastCheckedOrderDisplayIdx, clickedDisplayIdx);
+    const end = Math.max(lastCheckedOrderDisplayIdx, clickedDisplayIdx);
+    for (let di = start; di <= end; di++) {
+      if (currentDisplayList[di]) {
+        selectedOrderIndices.add(currentDisplayList[di]._idx);
+      }
     }
     renderOrders();
   } else {
@@ -9599,6 +9609,7 @@ function handleCheckboxClick(event, idx) {
     updateDeleteSelectedBtn();
   }
   lastCheckedOrderIdx = idx;
+  lastCheckedOrderDisplayIdx = clickedDisplayIdx !== -1 ? clickedDisplayIdx : null;
 }
 
 // Briefly add a `.copied` class to the clicked element so users get a "box
