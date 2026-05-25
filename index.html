@@ -474,6 +474,292 @@
   .perm-chip-btn:active { transform: scale(0.96); }
   .task-header-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
+  /* ── Daily Expense → Monthly Analytics button (top-right of card) ── */
+  .exp-analytics-btn {
+    position: absolute;
+    top: 12px; right: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 999px;
+    font-size: 14px;
+    background: rgba(59,130,246,0.10);
+    color: #60a5fa;
+    border: 1px solid rgba(59,130,246,0.32);
+    cursor: pointer;
+    transition: transform .15s, background .2s, border-color .2s, box-shadow .2s;
+    font-family: inherit;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 2;
+  }
+  .exp-analytics-btn:hover, .exp-analytics-btn:focus-visible {
+    background: rgba(59,130,246,0.22);
+    border-color: rgba(96,165,250,0.55);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
+    outline: none;
+  }
+  .exp-analytics-btn:active { transform: scale(0.92); }
+
+  /* ── Monthly Expense Analytics modal ── */
+  .expense-analytics-modal {
+    max-width: 520px;
+    padding: 20px 20px 22px;
+  }
+  .expense-analytics-modal h2 { font-size: 17px; font-weight: 800; }
+  .expense-analytics-modal p  { font-size: 12.5px; }
+  .exp-an-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 10px; margin-bottom: 14px;
+  }
+  .exp-an-close {
+    flex-shrink: 0;
+    width: 30px; height: 30px; border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card2);
+    color: var(--text3);
+    font-size: 18px; line-height: 1; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .exp-an-close:hover { background: var(--card3); color: #fff; }
+
+  .exp-an-month-nav {
+    display: flex; gap: 8px; align-items: center;
+    margin-bottom: 14px;
+  }
+  .exp-an-nav-btn {
+    flex-shrink: 0;
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--card2); border: 1px solid var(--border);
+    color: var(--text2); cursor: pointer; font-size: 13px;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .exp-an-nav-btn:hover, .exp-an-nav-btn:focus-visible {
+    background: var(--card3); border-color: rgba(120,170,255,0.38);
+    outline: none;
+  }
+  .exp-an-nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .exp-an-month-select {
+    flex: 1; min-width: 0;
+    padding: 9px 12px; border-radius: 10px;
+    background: var(--card2); border: 1px solid var(--border);
+    color: var(--text); font-size: 13.5px; font-weight: 600;
+    font-family: inherit; cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%2393a3b8' d='M0 0l5 6 5-6z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px 6px;
+    padding-right: 34px;
+  }
+  .exp-an-month-select:focus { outline: none; border-color: rgba(120,170,255,0.55); }
+
+  .exp-an-empty {
+    text-align: center; padding: 28px 8px;
+    border: 1px dashed var(--border); border-radius: 14px;
+    margin-bottom: 8px;
+  }
+  .exp-an-empty-icon { font-size: 36px; margin-bottom: 6px; }
+  .exp-an-empty-title { font-size: 14px; font-weight: 700; color: var(--text2); margin-bottom: 4px; }
+  .exp-an-empty-sub   { font-size: 12px; color: var(--text5); }
+
+  .exp-an-total-card {
+    background:
+      linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(30,64,175,0.06) 100%),
+      var(--card2);
+    border: 1px solid rgba(96,165,250,0.30);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .exp-an-total-label {
+    font-size: 10.5px; font-weight: 700;
+    color: var(--text4);
+    letter-spacing: .08em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .exp-an-total-amt {
+    font-size: 26px; font-weight: 800;
+    color: var(--gold);
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .exp-an-cmp-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .exp-an-cmp {
+    background: rgba(15,22,40,0.55);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .exp-an-cmp-label {
+    font-size: 9.5px; font-weight: 700; color: var(--text5);
+    text-transform: uppercase; letter-spacing: .07em;
+  }
+  .exp-an-cmp-val {
+    font-size: 13px; font-weight: 700; color: var(--text2);
+  }
+  .exp-an-cmp-val.up   { color: #f87171; }
+  .exp-an-cmp-val.down { color: #34d399; }
+  .exp-an-cmp-val.same { color: var(--text4); }
+
+  .exp-an-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    margin-bottom: 14px;
+  }
+  .exp-an-stat {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 8px;
+    text-align: center;
+  }
+  .exp-an-stat-val { font-size: 14px; font-weight: 800; color: #fff; line-height: 1.1; letter-spacing: -0.2px; }
+  .exp-an-stat-lbl { font-size: 9.5px; font-weight: 600; color: var(--text5); margin-top: 4px; letter-spacing: .04em; }
+
+  .exp-an-tabs {
+    display: flex; gap: 6px; padding: 4px;
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 12px;
+  }
+  .exp-an-tab {
+    flex: 1; padding: 8px 10px;
+    border: 1px solid transparent; border-radius: 8px;
+    background: transparent; color: var(--text4);
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    transition: all .2s; font-family: inherit;
+    white-space: nowrap;
+  }
+  .exp-an-tab:hover { color: var(--text2); }
+  .exp-an-tab.active {
+    background: linear-gradient(135deg, rgba(59,130,246,0.30) 0%, rgba(30,64,175,0.18) 100%);
+    color: #fff;
+    border-color: rgba(96,165,250,0.45);
+    box-shadow: 0 4px 14px rgba(59,130,246,0.22);
+  }
+
+  .exp-an-panel { margin-bottom: 12px; }
+  .exp-an-panel-title {
+    font-size: 10.5px; font-weight: 700; color: var(--text4);
+    text-transform: uppercase; letter-spacing: .08em;
+    margin-bottom: 9px;
+  }
+
+  .exp-an-row {
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border2);
+  }
+  .exp-an-row:last-child { border-bottom: none; }
+  .exp-an-row-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-bottom: 5px;
+  }
+  .exp-an-row-name {
+    font-size: 13px; font-weight: 600; color: var(--text);
+    flex: 1; min-width: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .exp-an-row-amt {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    flex-shrink: 0;
+  }
+  .exp-an-row-bar {
+    height: 5px; border-radius: 999px;
+    background: var(--card3); overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .exp-an-row-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+    border-radius: 999px;
+    transition: width .35s ease;
+  }
+  .exp-an-row-meta {
+    display: flex; gap: 8px; align-items: center;
+    font-size: 11px; color: var(--text5); flex-wrap: wrap;
+  }
+  .exp-an-row-pct { font-weight: 600; color: var(--text4); }
+  .exp-an-row-delta { font-weight: 700; }
+  .exp-an-row-delta.up   { color: #f87171; }
+  .exp-an-row-delta.down { color: #34d399; }
+  .exp-an-row-delta.new  { color: #fbbf24; }
+
+  .exp-an-daily-chart {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 2px;
+    height: 110px;
+    padding: 6px 4px 0;
+    border-bottom: 1px solid var(--border2);
+    margin-bottom: 10px;
+    overflow-x: auto;
+  }
+  .exp-an-daily-bar {
+    flex: 1; min-width: 6px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    height: 100%;
+    position: relative;
+  }
+  .exp-an-daily-bar-fill {
+    width: 100%;
+    background: linear-gradient(180deg, #60a5fa 0%, #1e40af 100%);
+    border-radius: 4px 4px 0 0;
+    transition: height .35s ease;
+    min-height: 1px;
+  }
+  .exp-an-daily-bar.zero .exp-an-daily-bar-fill {
+    background: var(--card3);
+    opacity: 0.5;
+  }
+  .exp-an-daily-bar.today .exp-an-daily-bar-fill {
+    background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+    box-shadow: 0 0 12px rgba(251,191,36,0.4);
+  }
+  .exp-an-daily-bar-day {
+    font-size: 8.5px; color: var(--text5); margin-top: 2px;
+    font-weight: 600;
+  }
+  .exp-an-daily-summary {
+    display: flex; justify-content: space-between; gap: 8px;
+    font-size: 11px; color: var(--text4);
+    padding: 4px 2px;
+  }
+  .exp-an-daily-summary b { color: var(--text2); font-weight: 700; }
+
+  .exp-an-tips {
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.28);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .exp-an-tips-head {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11.5px; font-weight: 800; color: #fbbf24;
+    margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .exp-an-tips-icon { font-size: 14px; }
+  .exp-an-tip {
+    font-size: 12.5px; color: var(--text2);
+    line-height: 1.55; padding: 5px 0;
+    border-bottom: 1px dashed rgba(251,191,36,0.18);
+  }
+  .exp-an-tip:last-child { border-bottom: none; }
+  .exp-an-tip b { color: #fbbf24; font-weight: 700; }
+
+  @media (max-width: 480px) {
+    .expense-analytics-modal { padding: 16px 14px 18px; }
+    .expense-analytics-modal h2 { font-size: 15px; }
+    .exp-an-total-amt { font-size: 22px; }
+    .exp-an-stat-val { font-size: 13px; }
+    .exp-an-tab { font-size: 11px; padding: 7px 6px; }
+    .exp-an-cmp-row { grid-template-columns: 1fr; }
+  }
+
   /* Permanent Task — modal-specific overrides */
   .perm-modal { max-width: 460px; padding: 22px 22px 24px; }
   .perm-modal h2 { display: flex; align-items: center; gap: 10px; }
@@ -3830,6 +4116,7 @@
       <div class="desktop-col">
         <div class="card">
           <div class="sec-label">💰 Daily Expense</div>
+          <button type="button" class="exp-analytics-btn" onclick="openExpenseAnalytics()" title="Monthly Analytics" aria-label="Monthly Analytics">📊</button>
           <div class="monthly-total-bar">
             <span class="monthly-label" id="d_monthlyLabel">এই মাসের মোট</span>
             <span class="monthly-amount" id="d_monthlyTotal">৳0</span>
@@ -4109,6 +4396,7 @@
 
       <div class="card desktop-expense-card">
         <div class="sec-label">Daily Expense</div>
+        <button type="button" class="exp-analytics-btn" onclick="openExpenseAnalytics()" title="Monthly Analytics" aria-label="Monthly Analytics">📊</button>
         <div class="monthly-total-bar">
           <span class="monthly-label" id="monthlyLabel">এই মাসের মোট</span>
           <span class="monthly-amount" id="monthlyTotal">৳0</span>
@@ -4156,6 +4444,7 @@
   <div class="section" id="sec-expense">
     <div class="card mobile-only">
       <div class="sec-label">Daily Expense 💰</div>
+      <button type="button" class="exp-analytics-btn" onclick="openExpenseAnalytics()" title="Monthly Analytics" aria-label="Monthly Analytics">📊</button>
       <div class="monthly-total-bar">
         <span class="monthly-label" id="mMonthlyLabel">এই মাসের মোট</span>
         <span class="monthly-amount" id="mMonthlyTotal">৳0</span>
@@ -4589,6 +4878,103 @@
   </div>
 </div>
 
+<!-- Monthly Expense Analytics Modal -->
+<div class="modal-overlay" id="expenseAnalyticsModal" onclick="onExpenseAnalyticsBackdrop(event)">
+  <div class="modal expense-analytics-modal">
+    <div class="exp-an-head">
+      <div>
+        <h2 id="expAnTitle" style="margin-bottom:2px">📊 Monthly Analytics</h2>
+        <p id="expAnSubtitle" style="margin-bottom:0">প্রতিমাসের খরচের বিশ্লেষণ</p>
+      </div>
+      <button type="button" class="exp-an-close" onclick="closeExpenseAnalytics()" aria-label="Close">×</button>
+    </div>
+
+    <div class="exp-an-month-nav">
+      <button type="button" class="exp-an-nav-btn" onclick="changeAnalyticsMonth(-1)" aria-label="Previous">◀</button>
+      <select id="expAnMonthSelect" class="exp-an-month-select" onchange="onAnalyticsMonthChange()"></select>
+      <button type="button" class="exp-an-nav-btn" onclick="changeAnalyticsMonth(1)" aria-label="Next">▶</button>
+    </div>
+
+    <div id="expAnEmpty" class="exp-an-empty" style="display:none">
+      <div class="exp-an-empty-icon">📭</div>
+      <div class="exp-an-empty-title" id="expAnEmptyTitle">এই মাসে কোনো খরচ নেই</div>
+      <div class="exp-an-empty-sub" id="expAnEmptySub">এই মাসে এখনো কোনো খরচ যোগ করো নি।</div>
+    </div>
+
+    <div id="expAnBody">
+      <!-- Total + comparisons -->
+      <div class="exp-an-total-card">
+        <div class="exp-an-total-label" id="expAnTotalLabel">এই মাসের মোট খরচ</div>
+        <div class="exp-an-total-amt" id="expAnTotalAmt">৳0</div>
+        <div class="exp-an-cmp-row">
+          <div class="exp-an-cmp" id="expAnCmpPrev">
+            <span class="exp-an-cmp-label" id="expAnCmpPrevLabel">আগের মাস</span>
+            <span class="exp-an-cmp-val" id="expAnCmpPrevVal">—</span>
+          </div>
+          <div class="exp-an-cmp" id="expAnCmpYear">
+            <span class="exp-an-cmp-label" id="expAnCmpYearLabel">গত বছর একই মাস</span>
+            <span class="exp-an-cmp-val" id="expAnCmpYearVal">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="exp-an-stats">
+        <div class="exp-an-stat">
+          <div class="exp-an-stat-val" id="expAnAvg">৳0</div>
+          <div class="exp-an-stat-lbl" id="expAnAvgLbl">দৈনিক গড়</div>
+        </div>
+        <div class="exp-an-stat">
+          <div class="exp-an-stat-val" id="expAnDays">0</div>
+          <div class="exp-an-stat-lbl" id="expAnDaysLbl">এক্টিভ দিন</div>
+        </div>
+        <div class="exp-an-stat">
+          <div class="exp-an-stat-val" id="expAnMax">৳0</div>
+          <div class="exp-an-stat-lbl" id="expAnMaxLbl">সর্বোচ্চ দিন</div>
+        </div>
+      </div>
+
+      <!-- Tab switcher -->
+      <div class="exp-an-tabs">
+        <button type="button" class="exp-an-tab active" data-an-tab="items" onclick="switchAnalyticsTab('items')" id="expAnTabItems">আইটেম</button>
+        <button type="button" class="exp-an-tab" data-an-tab="cats" onclick="switchAnalyticsTab('cats')" id="expAnTabCats">ক্যাটাগরি</button>
+        <button type="button" class="exp-an-tab" data-an-tab="daily" onclick="switchAnalyticsTab('daily')" id="expAnTabDaily">দৈনিক</button>
+      </div>
+
+      <!-- Items panel -->
+      <div class="exp-an-panel" id="expAnPanelItems">
+        <div class="exp-an-panel-title" id="expAnItemsTitle">কোন জিনিসে কত খরচ</div>
+        <div id="expAnItemsList"></div>
+      </div>
+
+      <!-- Categories panel -->
+      <div class="exp-an-panel" id="expAnPanelCats" style="display:none">
+        <div class="exp-an-panel-title" id="expAnCatsTitle">ক্যাটাগরি অনুযায়ী খরচ</div>
+        <div id="expAnCatsList"></div>
+      </div>
+
+      <!-- Daily trend panel -->
+      <div class="exp-an-panel" id="expAnPanelDaily" style="display:none">
+        <div class="exp-an-panel-title" id="expAnDailyTitle">দৈনিক খরচের ধারা</div>
+        <div class="exp-an-daily-chart" id="expAnDailyChart"></div>
+      </div>
+
+      <!-- Save tips -->
+      <div class="exp-an-tips" id="expAnTipsBox" style="display:none">
+        <div class="exp-an-tips-head">
+          <span class="exp-an-tips-icon">💡</span>
+          <span id="expAnTipsTitle">সাশ্রয়ের সুযোগ</span>
+        </div>
+        <div id="expAnTipsList"></div>
+      </div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="closeExpenseAnalytics()" id="expAnCloseBtn">✓ ঠিক আছে</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="permModal" onclick="onPermModalBackdrop(event)">
   <div class="modal perm-modal">
     <h2>📌 Permanent Task <span class="perm-pill">প্রতিদিন auto</span></h2>
@@ -4949,6 +5335,25 @@ function refreshLanguageSensitiveUi() {
   try { renderBazar(); } catch(_) {}
   try { renderNotes(); } catch(_) {}
   try { showDayPanel(selectedDateKey); } catch(_) {}
+  // If the Monthly Analytics modal is open, re-render so labels flip language.
+  try {
+    const anEl = document.getElementById('expenseAnalyticsModal');
+    if (anEl && anEl.classList.contains('open')) {
+      const sel = document.getElementById('expAnMonthSelect');
+      if (sel) {
+        const cur = sel.value;
+        sel.innerHTML = '';
+        (_analyticsState.monthList || []).forEach(o => {
+          const opt = document.createElement('option');
+          opt.value = o.y + '-' + o.m;
+          opt.textContent = _fmtMonthLabel(o.y, o.m);
+          sel.appendChild(opt);
+        });
+        if (cur) sel.value = cur;
+      }
+      renderExpenseAnalytics();
+    }
+  } catch(_) {}
   if (document.body.classList.contains('orders-active')) {
     try { renderOrders(); } catch(_) {}
   }
@@ -7119,6 +7524,585 @@ function renderMonthlyTotal() {
   const totalText = '৳'+total.toLocaleString();
   ['monthlyLabel','mMonthlyLabel','d_monthlyLabel'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = labelText; });
   ['monthlyTotal','mMonthlyTotal','d_monthlyTotal'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = totalText; });
+}
+
+// ════════════════════════════════════════════════════════════
+// MONTHLY EXPENSE ANALYTICS
+// ════════════════════════════════════════════════════════════
+let _analyticsState = {
+  year: null,
+  month: null,           // 0-indexed
+  tab: 'items',          // 'items' | 'cats' | 'daily'
+  monthList: [],         // [{y, m}, ...] sorted desc
+};
+
+// Try to detect a leading emoji (handles surrogate pairs, ZWJ sequences, VS16).
+function _extractLeadEmoji(name) {
+  if (!name) return null;
+  const trimmed = name.trim();
+  if (!trimmed) return null;
+  // Match leading sequence of emoji-related codepoints.
+  const re = /^([\p{Extended_Pictographic}\u200d\uFE0F][\p{Extended_Pictographic}\u200d\uFE0F\u{1F1E6}-\u{1F1FF}]*)/u;
+  const m = trimmed.match(re);
+  return m ? m[1] : null;
+}
+
+// Strip the leading emoji from an item name to get a clean label.
+function _stripLeadEmoji(name) {
+  if (!name) return '';
+  const emoji = _extractLeadEmoji(name);
+  if (!emoji) return name.trim();
+  return name.trim().slice(emoji.length).trim();
+}
+
+// Normalize a name for grouping (lowercase, collapse whitespace, strip emoji).
+function _normalizeExpenseName(name) {
+  const stripped = _stripLeadEmoji(name || '').toLowerCase();
+  return stripped.replace(/\s+/g, ' ').trim();
+}
+
+// Aggregate expenses for a given month.
+//   Returns: { total, byName: Map<key,{name,emoji,amt,count}>, byDay: Map<dayNum,amt>, daysActive, maxDay, entryCount }
+function aggregateMonth(year, month) {
+  const days = new Date(year, month + 1, 0).getDate();
+  let total = 0;
+  let entryCount = 0;
+  const byName = new Map();
+  const byDay = new Map();
+  let daysActive = 0;
+  let maxDayVal = 0;
+  let maxDayNum = 0;
+
+  for (let d = 1; d <= days; d++) {
+    const k = year + '-' + (month + 1) + '-' + d;
+    const data = getDayData(k);
+    if (!data || !Array.isArray(data.expenses) || !data.expenses.length) continue;
+    let dayTotal = 0;
+    data.expenses.forEach(e => {
+      const amt = Number(e.amt) || 0;
+      if (amt <= 0) return;
+      dayTotal += amt;
+      entryCount++;
+      const rawName = (e.name || '').trim() || (currentLang === 'en' ? 'Unnamed' : 'নামবিহীন');
+      const key = _normalizeExpenseName(rawName) || rawName.toLowerCase();
+      const emoji = _extractLeadEmoji(rawName) || '';
+      const cleanName = _stripLeadEmoji(rawName) || rawName;
+      const existing = byName.get(key);
+      if (existing) {
+        existing.amt += amt;
+        existing.count += 1;
+        if (emoji && !existing.emoji) existing.emoji = emoji;
+      } else {
+        byName.set(key, { name: cleanName, emoji, amt, count: 1 });
+      }
+    });
+    if (dayTotal > 0) {
+      total += dayTotal;
+      daysActive++;
+      byDay.set(d, dayTotal);
+      if (dayTotal > maxDayVal) { maxDayVal = dayTotal; maxDayNum = d; }
+    }
+  }
+
+  return { total, byName, byDay, daysActive, maxDayVal, maxDayNum, entryCount, daysInMonth: days };
+}
+
+// Group aggregated items by emoji prefix as a coarse category.
+function aggregateCategories(byName) {
+  const cats = new Map();
+  byName.forEach(it => {
+    const key = it.emoji || '__none__';
+    const existing = cats.get(key);
+    const itemAmt = it.amt;
+    if (existing) {
+      existing.amt += itemAmt;
+      existing.count += it.count;
+      existing.items.push(it);
+    } else {
+      cats.set(key, { emoji: it.emoji, amt: itemAmt, count: it.count, items: [it] });
+    }
+  });
+  return cats;
+}
+
+// Discover months that have any expense data. Returns [{y,m}] sorted desc.
+function getAnalyticsMonthList() {
+  const seen = new Set();
+  const list = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith('day_')) continue;
+      const parts = k.slice(4).split('-');
+      if (parts.length !== 3) continue;
+      const y = parseInt(parts[0], 10), m = parseInt(parts[1], 10) - 1;
+      if (isNaN(y) || isNaN(m)) continue;
+      const raw = localStorage.getItem(k);
+      if (!raw) continue;
+      let data;
+      try { data = JSON.parse(raw); } catch { continue; }
+      if (!data || !Array.isArray(data.expenses) || !data.expenses.length) continue;
+      const hasAmt = data.expenses.some(e => (Number(e.amt) || 0) > 0);
+      if (!hasAmt) continue;
+      const tag = y + '-' + m;
+      if (!seen.has(tag)) { seen.add(tag); list.push({ y, m }); }
+    }
+  } catch (e) { /* noop */ }
+  // Always include current calendar month as a fallback so the modal isn't empty.
+  const cy = (calDate || today).getFullYear();
+  const cm = (calDate || today).getMonth();
+  const tag = cy + '-' + cm;
+  if (!seen.has(tag)) { seen.add(tag); list.push({ y: cy, m: cm }); }
+  list.sort((a, b) => (b.y - a.y) || (b.m - a.m));
+  return list;
+}
+
+function _fmtMoney(n) { return '৳' + Math.round(Number(n) || 0).toLocaleString(); }
+
+function _fmtMonthLabel(y, m) {
+  const arr = currentLang === 'en' ? monthsEn : months;
+  return arr[m] + ' ' + y;
+}
+
+function _fmtPctDelta(curr, prev) {
+  if (!prev || prev <= 0) {
+    if (curr > 0) return { text: currentLang === 'en' ? 'New' : 'নতুন', cls: 'up' };
+    return { text: '—', cls: 'same' };
+  }
+  const diff = curr - prev;
+  const pct = (diff / prev) * 100;
+  if (Math.abs(pct) < 0.5) return { text: currentLang === 'en' ? 'Same' : 'একই', cls: 'same' };
+  const arrow = pct > 0 ? '↑' : '↓';
+  const cls = pct > 0 ? 'up' : 'down';
+  return { text: arrow + ' ' + Math.abs(pct).toFixed(0) + '%', cls };
+}
+
+function openExpenseAnalytics() {
+  _analyticsState.monthList = getAnalyticsMonthList();
+  // Default to current calendar month (or the most recent one with data).
+  const cy = (calDate || today).getFullYear();
+  const cm = (calDate || today).getMonth();
+  const found = _analyticsState.monthList.find(o => o.y === cy && o.m === cm)
+              || _analyticsState.monthList[0];
+  _analyticsState.year = found.y;
+  _analyticsState.month = found.m;
+  _analyticsState.tab = 'items';
+
+  // Populate month select.
+  const sel = document.getElementById('expAnMonthSelect');
+  if (sel) {
+    sel.innerHTML = '';
+    _analyticsState.monthList.forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o.y + '-' + o.m;
+      opt.textContent = _fmtMonthLabel(o.y, o.m);
+      sel.appendChild(opt);
+    });
+    sel.value = _analyticsState.year + '-' + _analyticsState.month;
+  }
+
+  // Reset tabs.
+  document.querySelectorAll('#expenseAnalyticsModal .exp-an-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.anTab === 'items');
+  });
+  const pi = document.getElementById('expAnPanelItems');
+  const pc = document.getElementById('expAnPanelCats');
+  const pd = document.getElementById('expAnPanelDaily');
+  if (pi) pi.style.display = '';
+  if (pc) pc.style.display = 'none';
+  if (pd) pd.style.display = 'none';
+
+  applyAnalyticsLanguage();
+  renderExpenseAnalytics();
+
+  const m = document.getElementById('expenseAnalyticsModal');
+  if (m) m.classList.add('open');
+}
+
+function closeExpenseAnalytics() {
+  const m = document.getElementById('expenseAnalyticsModal');
+  if (m) m.classList.remove('open');
+}
+
+function onExpenseAnalyticsBackdrop(e) {
+  if (e && e.target && e.target.id === 'expenseAnalyticsModal') closeExpenseAnalytics();
+}
+
+function onAnalyticsMonthChange() {
+  const sel = document.getElementById('expAnMonthSelect');
+  if (!sel) return;
+  const [ys, ms] = sel.value.split('-');
+  _analyticsState.year = parseInt(ys, 10);
+  _analyticsState.month = parseInt(ms, 10);
+  renderExpenseAnalytics();
+}
+
+function changeAnalyticsMonth(dir) {
+  const list = _analyticsState.monthList;
+  if (!list.length) return;
+  // List is sorted desc (newest first). dir=-1 → previous (older), dir=+1 → next (newer).
+  const idx = list.findIndex(o => o.y === _analyticsState.year && o.m === _analyticsState.month);
+  let newIdx;
+  if (idx === -1) newIdx = 0;
+  else newIdx = dir < 0 ? idx + 1 : idx - 1;
+  if (newIdx < 0) newIdx = 0;
+  if (newIdx >= list.length) newIdx = list.length - 1;
+  _analyticsState.year = list[newIdx].y;
+  _analyticsState.month = list[newIdx].m;
+  const sel = document.getElementById('expAnMonthSelect');
+  if (sel) sel.value = _analyticsState.year + '-' + _analyticsState.month;
+  renderExpenseAnalytics();
+}
+
+function switchAnalyticsTab(tab) {
+  _analyticsState.tab = tab;
+  document.querySelectorAll('#expenseAnalyticsModal .exp-an-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.anTab === tab);
+  });
+  const pi = document.getElementById('expAnPanelItems');
+  const pc = document.getElementById('expAnPanelCats');
+  const pd = document.getElementById('expAnPanelDaily');
+  if (pi) pi.style.display = (tab === 'items') ? '' : 'none';
+  if (pc) pc.style.display = (tab === 'cats')  ? '' : 'none';
+  if (pd) pd.style.display = (tab === 'daily') ? '' : 'none';
+}
+
+function applyAnalyticsLanguage() {
+  const en = currentLang === 'en';
+  const set = (id, bn, eng) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = en ? eng : bn;
+  };
+  set('expAnTitle', '📊 মাসিক বিশ্লেষণ', '📊 Monthly Analytics');
+  set('expAnSubtitle', 'প্রতিমাসের খরচের বিশ্লেষণ', "Each month's expense breakdown");
+  set('expAnTotalLabel', 'এই মাসের মোট খরচ', 'Total spent this month');
+  set('expAnCmpPrevLabel', 'আগের মাস', 'vs last month');
+  set('expAnCmpYearLabel', 'গত বছর একই মাস', 'vs same month last year');
+  set('expAnAvgLbl', 'দৈনিক গড়', 'Daily avg');
+  set('expAnDaysLbl', 'এক্টিভ দিন', 'Active days');
+  set('expAnMaxLbl', 'সর্বোচ্চ দিন', 'Highest day');
+  set('expAnTabItems', 'আইটেম', 'Items');
+  set('expAnTabCats', 'ক্যাটাগরি', 'Categories');
+  set('expAnTabDaily', 'দৈনিক', 'Daily');
+  set('expAnItemsTitle', 'কোন জিনিসে কত খরচ', 'Where you spent');
+  set('expAnCatsTitle', 'ক্যাটাগরি অনুযায়ী খরচ', 'By category');
+  set('expAnDailyTitle', 'দৈনিক খরচের ধারা', 'Daily spending trend');
+  set('expAnTipsTitle', 'সাশ্রয়ের সুযোগ', 'Where you can save');
+  set('expAnEmptyTitle', 'এই মাসে কোনো খরচ নেই', 'No expenses this month');
+  set('expAnEmptySub', 'এই মাসে এখনো কোনো খরচ যোগ করো নি।', 'No expenses have been added for this month yet.');
+  const closeBtn = document.getElementById('expAnCloseBtn');
+  if (closeBtn) closeBtn.textContent = en ? '✓ Done' : '✓ ঠিক আছে';
+}
+
+function renderExpenseAnalytics() {
+  applyAnalyticsLanguage();
+  const en = currentLang === 'en';
+  const y = _analyticsState.year, m = _analyticsState.month;
+  if (y == null || m == null) return;
+
+  const curr = aggregateMonth(y, m);
+
+  // Previous month.
+  let prevY = y, prevM = m - 1;
+  if (prevM < 0) { prevM = 11; prevY = y - 1; }
+  const prev = aggregateMonth(prevY, prevM);
+
+  // Same month last year.
+  const yearAgo = aggregateMonth(y - 1, m);
+
+  // Total + comparisons.
+  const totalEl = document.getElementById('expAnTotalAmt');
+  if (totalEl) totalEl.textContent = _fmtMoney(curr.total);
+
+  const dPrev = _fmtPctDelta(curr.total, prev.total);
+  const dYear = _fmtPctDelta(curr.total, yearAgo.total);
+  const setCmp = (valId, d, prevTotal) => {
+    const el = document.getElementById(valId);
+    if (!el) return;
+    el.classList.remove('up','down','same');
+    el.classList.add(d.cls);
+    let txt = d.text;
+    if (prevTotal > 0) txt += '  · ' + _fmtMoney(prevTotal);
+    el.textContent = txt;
+  };
+  setCmp('expAnCmpPrevVal', dPrev, prev.total);
+  setCmp('expAnCmpYearVal', dYear, yearAgo.total);
+
+  // Empty state handling.
+  const emptyEl = document.getElementById('expAnEmpty');
+  const bodyEl  = document.getElementById('expAnBody');
+  if (curr.total <= 0) {
+    if (emptyEl) emptyEl.style.display = '';
+    if (bodyEl) bodyEl.style.display = 'none';
+    return;
+  } else {
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (bodyEl) bodyEl.style.display = '';
+  }
+
+  // Quick stats — daily avg uses days that actually had expenses to be more meaningful.
+  const avg = curr.daysActive > 0 ? Math.round(curr.total / curr.daysActive) : 0;
+  const avgEl  = document.getElementById('expAnAvg');
+  const daysEl = document.getElementById('expAnDays');
+  const maxEl  = document.getElementById('expAnMax');
+  if (avgEl) avgEl.textContent = _fmtMoney(avg);
+  if (daysEl) daysEl.textContent = String(curr.daysActive);
+  if (maxEl) {
+    if (curr.maxDayVal > 0) {
+      maxEl.textContent = _fmtMoney(curr.maxDayVal) + ' (' + curr.maxDayNum + ')';
+    } else {
+      maxEl.textContent = '৳0';
+    }
+  }
+
+  // ── Items breakdown ──
+  const itemsList = document.getElementById('expAnItemsList');
+  if (itemsList) {
+    itemsList.innerHTML = '';
+    const items = Array.from(curr.byName.entries())
+      .map(([key, v]) => ({ key, ...v }))
+      .sort((a, b) => b.amt - a.amt);
+
+    const maxAmt = items.length ? items[0].amt : 0;
+    items.forEach(it => {
+      const pct = maxAmt > 0 ? (it.amt / maxAmt * 100) : 0;
+      const sharePct = curr.total > 0 ? (it.amt / curr.total * 100) : 0;
+      const prevItem = prev.byName.get(it.key);
+      const prevAmt = prevItem ? prevItem.amt : 0;
+      const diff = it.amt - prevAmt;
+
+      const row = document.createElement('div');
+      row.className = 'exp-an-row';
+
+      const top = document.createElement('div');
+      top.className = 'exp-an-row-top';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'exp-an-row-name';
+      const display = (it.emoji ? it.emoji + ' ' : '') + (it.name || (en ? 'Unnamed' : 'নামবিহীন'));
+      nameEl.textContent = display;
+      const amtEl = document.createElement('div');
+      amtEl.className = 'exp-an-row-amt';
+      amtEl.textContent = _fmtMoney(it.amt);
+      top.appendChild(nameEl); top.appendChild(amtEl);
+
+      const bar = document.createElement('div');
+      bar.className = 'exp-an-row-bar';
+      const fill = document.createElement('div');
+      fill.className = 'exp-an-row-bar-fill';
+      fill.style.width = Math.max(2, pct) + '%';
+      bar.appendChild(fill);
+
+      const meta = document.createElement('div');
+      meta.className = 'exp-an-row-meta';
+      const pctSpan = document.createElement('span');
+      pctSpan.className = 'exp-an-row-pct';
+      pctSpan.textContent = sharePct.toFixed(1) + '% ' + (en ? 'of total' : 'মোট খরচের');
+      meta.appendChild(pctSpan);
+
+      const countSpan = document.createElement('span');
+      countSpan.textContent = '· ' + it.count + ' ' + (en ? (it.count === 1 ? 'entry' : 'entries') : 'টা এন্ট্রি');
+      meta.appendChild(countSpan);
+
+      const deltaSpan = document.createElement('span');
+      deltaSpan.className = 'exp-an-row-delta';
+      if (!prevItem) {
+        deltaSpan.classList.add('new');
+        deltaSpan.textContent = '· ' + (en ? 'new this month' : 'এই মাসে নতুন');
+      } else if (Math.abs(diff) < 1) {
+        // hide tiny diffs
+      } else if (diff > 0) {
+        deltaSpan.classList.add('up');
+        deltaSpan.textContent = '· ↑ ' + _fmtMoney(diff) + ' ' + (en ? 'vs last month' : 'আগের মাসের চেয়ে বেশি');
+      } else {
+        deltaSpan.classList.add('down');
+        deltaSpan.textContent = '· ↓ ' + _fmtMoney(-diff) + ' ' + (en ? 'vs last month' : 'আগের মাসের চেয়ে কম');
+      }
+      if (deltaSpan.textContent) meta.appendChild(deltaSpan);
+
+      row.appendChild(top); row.appendChild(bar); row.appendChild(meta);
+      itemsList.appendChild(row);
+    });
+
+    if (!items.length) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'font-size:12.5px;color:var(--text5);padding:12px 0;text-align:center';
+      empty.textContent = en ? 'No items.' : 'কোনো আইটেম নেই।';
+      itemsList.appendChild(empty);
+    }
+  }
+
+  // ── Categories breakdown ──
+  const catsList = document.getElementById('expAnCatsList');
+  if (catsList) {
+    catsList.innerHTML = '';
+    const catsCurr = aggregateCategories(curr.byName);
+    const catsPrev = aggregateCategories(prev.byName);
+
+    const cats = Array.from(catsCurr.entries())
+      .map(([key, v]) => ({ key, ...v }))
+      .sort((a, b) => b.amt - a.amt);
+
+    const maxAmt = cats.length ? cats[0].amt : 0;
+    cats.forEach(c => {
+      const pct = maxAmt > 0 ? (c.amt / maxAmt * 100) : 0;
+      const sharePct = curr.total > 0 ? (c.amt / curr.total * 100) : 0;
+      const prevCat = catsPrev.get(c.key);
+      const prevAmt = prevCat ? prevCat.amt : 0;
+      const diff = c.amt - prevAmt;
+
+      const label = c.emoji
+        ? c.emoji + ' ' + (en ? 'category' : 'ক্যাটাগরি')
+        : (en ? '📦 Other' : '📦 অন্যান্য');
+
+      const row = document.createElement('div');
+      row.className = 'exp-an-row';
+
+      const top = document.createElement('div');
+      top.className = 'exp-an-row-top';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'exp-an-row-name';
+      // Show the emoji prominently and the count of distinct items inside.
+      const distinctCount = (c.items || []).length;
+      const itemsLbl = en
+        ? distinctCount + ' item' + (distinctCount === 1 ? '' : 's')
+        : distinctCount + ' টা আইটেম';
+      nameEl.textContent = (c.emoji ? c.emoji : '📦') + ' ' + itemsLbl;
+      const amtEl = document.createElement('div');
+      amtEl.className = 'exp-an-row-amt';
+      amtEl.textContent = _fmtMoney(c.amt);
+      top.appendChild(nameEl); top.appendChild(amtEl);
+
+      const bar = document.createElement('div');
+      bar.className = 'exp-an-row-bar';
+      const fill = document.createElement('div');
+      fill.className = 'exp-an-row-bar-fill';
+      fill.style.width = Math.max(2, pct) + '%';
+      bar.appendChild(fill);
+
+      const meta = document.createElement('div');
+      meta.className = 'exp-an-row-meta';
+      const pctSpan = document.createElement('span');
+      pctSpan.className = 'exp-an-row-pct';
+      pctSpan.textContent = sharePct.toFixed(1) + '% ' + (en ? 'of total' : 'মোট খরচের');
+      meta.appendChild(pctSpan);
+
+      const deltaSpan = document.createElement('span');
+      deltaSpan.className = 'exp-an-row-delta';
+      if (!prevCat) {
+        deltaSpan.classList.add('new');
+        deltaSpan.textContent = '· ' + (en ? 'new this month' : 'এই মাসে নতুন');
+      } else if (Math.abs(diff) < 1) {
+        // hide
+      } else if (diff > 0) {
+        deltaSpan.classList.add('up');
+        deltaSpan.textContent = '· ↑ ' + _fmtMoney(diff);
+      } else {
+        deltaSpan.classList.add('down');
+        deltaSpan.textContent = '· ↓ ' + _fmtMoney(-diff);
+      }
+      if (deltaSpan.textContent) meta.appendChild(deltaSpan);
+
+      row.appendChild(top); row.appendChild(bar); row.appendChild(meta);
+      catsList.appendChild(row);
+    });
+
+    if (!cats.length) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'font-size:12.5px;color:var(--text5);padding:12px 0;text-align:center';
+      empty.textContent = en ? 'No categories.' : 'কোনো ক্যাটাগরি নেই।';
+      catsList.appendChild(empty);
+    }
+  }
+
+  // ── Daily trend chart ──
+  const dailyChart = document.getElementById('expAnDailyChart');
+  if (dailyChart) {
+    dailyChart.innerHTML = '';
+    const days = curr.daysInMonth;
+    let maxV = 0;
+    for (let d = 1; d <= days; d++) {
+      const v = curr.byDay.get(d) || 0;
+      if (v > maxV) maxV = v;
+    }
+    const isCurrCalMonth = (y === today.getFullYear() && m === today.getMonth());
+    for (let d = 1; d <= days; d++) {
+      const v = curr.byDay.get(d) || 0;
+      const heightPct = maxV > 0 ? (v / maxV * 100) : 0;
+      const bar = document.createElement('div');
+      bar.className = 'exp-an-daily-bar' + (v <= 0 ? ' zero' : '') + (isCurrCalMonth && d === today.getDate() ? ' today' : '');
+      bar.title = (en ? monthsEn[m] : months[m]) + ' ' + d + ': ' + _fmtMoney(v);
+      const fill = document.createElement('div');
+      fill.className = 'exp-an-daily-bar-fill';
+      fill.style.height = (v > 0 ? Math.max(3, heightPct) : 1) + '%';
+      bar.appendChild(fill);
+      // Show a label every 5 days to avoid clutter.
+      if (d === 1 || d % 5 === 0 || d === days) {
+        const lbl = document.createElement('div');
+        lbl.className = 'exp-an-daily-bar-day';
+        lbl.textContent = String(d);
+        bar.appendChild(lbl);
+      }
+      dailyChart.appendChild(bar);
+    }
+
+    // Append a small summary line below.
+    const summary = document.createElement('div');
+    summary.className = 'exp-an-daily-summary';
+    const left = document.createElement('span');
+    left.innerHTML = (en ? 'Active: ' : 'এক্টিভ: ') + '<b>' + curr.daysActive + '/' + days + '</b>';
+    const right = document.createElement('span');
+    right.innerHTML = (en ? 'Peak: ' : 'সর্বোচ্চ: ') + '<b>' + (curr.maxDayVal > 0 ? _fmtMoney(curr.maxDayVal) + ' (' + (en ? monthsEn[m] : months[m]) + ' ' + curr.maxDayNum + ')' : '—') + '</b>';
+    summary.appendChild(left); summary.appendChild(right);
+    dailyChart.parentNode.querySelectorAll('.exp-an-daily-summary').forEach(n => n.remove());
+    dailyChart.parentNode.appendChild(summary);
+  }
+
+  // ── Savings tips: items where spend rose vs previous month ──
+  const tipsBox = document.getElementById('expAnTipsBox');
+  const tipsList = document.getElementById('expAnTipsList');
+  if (tipsBox && tipsList) {
+    tipsList.innerHTML = '';
+    const risers = [];
+    curr.byName.forEach((it, key) => {
+      const p = prev.byName.get(key);
+      if (!p) return;
+      const diff = it.amt - p.amt;
+      // Only flag meaningful jumps (≥৳50 and ≥15% increase).
+      if (diff >= 50 && p.amt > 0 && (diff / p.amt) >= 0.15) {
+        risers.push({ ...it, key, prevAmt: p.amt, diff, pct: (diff / p.amt * 100) });
+      }
+    });
+    risers.sort((a, b) => b.diff - a.diff);
+    const top = risers.slice(0, 4);
+    if (top.length) {
+      top.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'exp-an-tip';
+        const display = (r.emoji ? r.emoji + ' ' : '') + (r.name || (en ? 'Unnamed' : 'নামবিহীন'));
+        const target = Math.max(0, p_target_for(r.amt, r.prevAmt));
+        if (en) {
+          div.innerHTML =
+            '<b>' + display + '</b> rose by <b>' + _fmtMoney(r.diff) +
+            '</b> (' + r.pct.toFixed(0) + '% up). Try keeping it under <b>' + _fmtMoney(target) + '</b> next month.';
+        } else {
+          div.innerHTML =
+            '<b>' + display + '</b> এ ' + _fmtMoney(r.diff) +
+            ' বেশি খরচ হয়েছে (' + r.pct.toFixed(0) + '% বেশি)। পরের মাস ' +
+            '<b>' + _fmtMoney(target) + '</b> এর মধ্যে রাখার চেষ্টা করো।';
+        }
+        tipsList.appendChild(div);
+      });
+      tipsBox.style.display = '';
+    } else {
+      tipsBox.style.display = 'none';
+    }
+  }
+}
+
+// Suggested target = previous-month amount (or current minus half the rise, whichever is smaller).
+function p_target_for(currAmt, prevAmt) {
+  const half = currAmt - Math.round((currAmt - prevAmt) / 2);
+  return Math.min(prevAmt, half);
 }
 
 function buildCalGrid(gridEl, titleEl) {
