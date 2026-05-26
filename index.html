@@ -695,6 +695,10 @@
   .exp-an-row-name {
     font-size: 13px; font-weight: 600; color: var(--text);
     flex: 1; min-width: 0;
+    display: flex; align-items: center;
+  }
+  .exp-an-row-name > span:not(.exp-an-row-rank) {
+    flex: 1; min-width: 0;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .exp-an-row-amt {
@@ -721,6 +725,64 @@
   .exp-an-row-delta.up   { color: #f87171; }
   .exp-an-row-delta.down { color: #34d399; }
   .exp-an-row-delta.new  { color: #fbbf24; }
+  .exp-an-row.exp-an-row-hidden { display: none; }
+  .exp-an-row-rank {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; flex-shrink: 0;
+    font-size: 10px; font-weight: 800;
+    color: var(--text4);
+    background: rgba(120,160,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    margin-right: 8px;
+    letter-spacing: 0;
+  }
+  .exp-an-row-rank.gold   { background: rgba(251,191,36,0.14); color: #fbbf24; border-color: rgba(251,191,36,0.35); }
+  .exp-an-row-rank.silver { background: rgba(203,213,225,0.10); color: #cbd5e1; border-color: rgba(203,213,225,0.30); }
+  .exp-an-row-rank.bronze { background: rgba(251,146,60,0.10); color: #fdba74; border-color: rgba(251,146,60,0.30); }
+  .exp-an-see-more {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; margin: 10px 0 2px;
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.22);
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 12px; font-weight: 700; color: var(--green);
+    cursor: pointer; transition: all .2s;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .exp-an-see-more:hover, .exp-an-see-more:active {
+    background: rgba(59,130,246,0.14);
+    border-color: rgba(59,130,246,0.45);
+    color: #93c5fd;
+  }
+  .exp-an-see-more:active { transform: scale(0.985); }
+  .exp-an-see-more .chev { transition: transform .25s var(--ease-out); display: inline-block; }
+  .exp-an-see-more.expanded .chev { transform: rotate(180deg); }
+
+  /* Bar chart styles for daily trend ("long line" view). */
+  .exp-an-daily-svg .day-bar {
+    fill: url(#expAnBarGrad);
+    transition: opacity .15s ease;
+  }
+  .exp-an-daily-svg .day-bar.zero {
+    fill: rgba(120,160,255,0.10);
+  }
+  .exp-an-daily-svg .day-bar.today {
+    fill: url(#expAnBarTodayGrad);
+    filter: drop-shadow(0 0 5px rgba(251,191,36,0.55));
+  }
+  .exp-an-daily-svg .day-bar.peak {
+    fill: url(#expAnBarPeakGrad);
+    filter: drop-shadow(0 0 4px rgba(96,165,250,0.50));
+  }
+  .exp-an-daily-svg .day-bar:hover { opacity: 0.78; }
+  .exp-an-daily-svg .bar-base {
+    stroke: rgba(120,160,255,0.18);
+    stroke-width: 1;
+  }
 
   .exp-an-daily-chart {
     position: relative;
@@ -7605,7 +7667,10 @@ let _analyticsState = {
   month: null,           // 0-indexed
   tab: 'items',          // 'items' | 'cats' | 'daily'
   monthList: [],         // [{y, m}, ...] sorted desc
+  itemsExpanded: false,  // show all items vs top 5
+  catsExpanded: false,   // show all categories vs top 5
 };
+const ANALYTICS_LIST_LIMIT = 5;
 
 // Try to detect a leading emoji (handles surrogate pairs, ZWJ sequences, VS16).
 function _extractLeadEmoji(name) {
@@ -7786,6 +7851,8 @@ function openExpenseAnalytics(btn) {
   _analyticsState.year = found.y;
   _analyticsState.month = found.m;
   _analyticsState.tab = 'items';
+  _analyticsState.itemsExpanded = false;
+  _analyticsState.catsExpanded = false;
 
   // Populate month select.
   const sel = document.getElementById('expAnMonthSelect');
@@ -7855,6 +7922,8 @@ function onAnalyticsMonthChange() {
   const [ys, ms] = sel.value.split('-');
   _analyticsState.year = parseInt(ys, 10);
   _analyticsState.month = parseInt(ms, 10);
+  _analyticsState.itemsExpanded = false;
+  _analyticsState.catsExpanded = false;
   renderExpenseAnalytics();
 }
 
@@ -7870,6 +7939,8 @@ function changeAnalyticsMonth(dir) {
   if (newIdx >= list.length) newIdx = list.length - 1;
   _analyticsState.year = list[newIdx].y;
   _analyticsState.month = list[newIdx].m;
+  _analyticsState.itemsExpanded = false;
+  _analyticsState.catsExpanded = false;
   const sel = document.getElementById('expAnMonthSelect');
   if (sel) sel.value = _analyticsState.year + '-' + _analyticsState.month;
   renderExpenseAnalytics();
@@ -7985,7 +8056,10 @@ function renderExpenseAnalytics() {
       .sort((a, b) => b.amt - a.amt);
 
     const maxAmt = items.length ? items[0].amt : 0;
-    items.forEach(it => {
+    const itemsLimit = ANALYTICS_LIST_LIMIT;
+    const itemsExpanded = _analyticsState.itemsExpanded;
+
+    items.forEach((it, idx) => {
       const pct = maxAmt > 0 ? (it.amt / maxAmt * 100) : 0;
       const sharePct = curr.total > 0 ? (it.amt / curr.total * 100) : 0;
       const prevItem = prev.byName.get(it.key);
@@ -7994,13 +8068,20 @@ function renderExpenseAnalytics() {
 
       const row = document.createElement('div');
       row.className = 'exp-an-row';
+      if (!itemsExpanded && idx >= itemsLimit) row.classList.add('exp-an-row-hidden');
 
       const top = document.createElement('div');
       top.className = 'exp-an-row-top';
       const nameEl = document.createElement('div');
       nameEl.className = 'exp-an-row-name';
+      const rank = document.createElement('span');
+      rank.className = 'exp-an-row-rank' + (idx === 0 ? ' gold' : idx === 1 ? ' silver' : idx === 2 ? ' bronze' : '');
+      rank.textContent = String(idx + 1);
+      nameEl.appendChild(rank);
       const display = (it.emoji ? it.emoji + ' ' : '') + (it.name || (en ? 'Unnamed' : 'নামবিহীন'));
-      nameEl.textContent = display;
+      const nameTxt = document.createElement('span');
+      nameTxt.textContent = display;
+      nameEl.appendChild(nameTxt);
       const amtEl = document.createElement('div');
       amtEl.className = 'exp-an-row-amt';
       amtEl.textContent = _fmtMoney(it.amt);
@@ -8044,6 +8125,23 @@ function renderExpenseAnalytics() {
       itemsList.appendChild(row);
     });
 
+    // See more / less toggle when more than the limit exist.
+    if (items.length > itemsLimit) {
+      const hidden = items.length - itemsLimit;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'exp-an-see-more' + (itemsExpanded ? ' expanded' : '');
+      const lbl = itemsExpanded
+        ? (en ? 'Show less' : 'কম দেখাও')
+        : (en ? ('Show ' + hidden + ' more') : ('আরো ' + hidden + ' টা দেখাও'));
+      btn.innerHTML = '<span>' + lbl + '</span><span class="chev">▾</span>';
+      btn.onclick = () => {
+        _analyticsState.itemsExpanded = !_analyticsState.itemsExpanded;
+        renderExpenseAnalytics();
+      };
+      itemsList.appendChild(btn);
+    }
+
     if (!items.length) {
       const empty = document.createElement('div');
       empty.style.cssText = 'font-size:12.5px;color:var(--text5);padding:12px 0;text-align:center';
@@ -8064,30 +8162,36 @@ function renderExpenseAnalytics() {
       .sort((a, b) => b.amt - a.amt);
 
     const maxAmt = cats.length ? cats[0].amt : 0;
-    cats.forEach(c => {
+    const catsLimit = ANALYTICS_LIST_LIMIT;
+    const catsExpanded = _analyticsState.catsExpanded;
+
+    cats.forEach((c, idx) => {
       const pct = maxAmt > 0 ? (c.amt / maxAmt * 100) : 0;
       const sharePct = curr.total > 0 ? (c.amt / curr.total * 100) : 0;
       const prevCat = catsPrev.get(c.key);
       const prevAmt = prevCat ? prevCat.amt : 0;
       const diff = c.amt - prevAmt;
 
-      const label = c.emoji
-        ? c.emoji + ' ' + (en ? 'category' : 'ক্যাটাগরি')
-        : (en ? '📦 Other' : '📦 অন্যান্য');
-
       const row = document.createElement('div');
       row.className = 'exp-an-row';
+      if (!catsExpanded && idx >= catsLimit) row.classList.add('exp-an-row-hidden');
 
       const top = document.createElement('div');
       top.className = 'exp-an-row-top';
       const nameEl = document.createElement('div');
       nameEl.className = 'exp-an-row-name';
+      const rank = document.createElement('span');
+      rank.className = 'exp-an-row-rank' + (idx === 0 ? ' gold' : idx === 1 ? ' silver' : idx === 2 ? ' bronze' : '');
+      rank.textContent = String(idx + 1);
+      nameEl.appendChild(rank);
       // Show the emoji prominently and the count of distinct items inside.
       const distinctCount = (c.items || []).length;
       const itemsLbl = en
         ? distinctCount + ' item' + (distinctCount === 1 ? '' : 's')
         : distinctCount + ' টা আইটেম';
-      nameEl.textContent = (c.emoji ? c.emoji : '📦') + ' ' + itemsLbl;
+      const nameTxt = document.createElement('span');
+      nameTxt.textContent = (c.emoji ? c.emoji : '📦') + ' ' + itemsLbl;
+      nameEl.appendChild(nameTxt);
       const amtEl = document.createElement('div');
       amtEl.className = 'exp-an-row-amt';
       amtEl.textContent = _fmtMoney(c.amt);
@@ -8127,6 +8231,23 @@ function renderExpenseAnalytics() {
       catsList.appendChild(row);
     });
 
+    // See more / less toggle.
+    if (cats.length > catsLimit) {
+      const hidden = cats.length - catsLimit;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'exp-an-see-more' + (catsExpanded ? ' expanded' : '');
+      const lbl = catsExpanded
+        ? (en ? 'Show less' : 'কম দেখাও')
+        : (en ? ('Show ' + hidden + ' more') : ('আরো ' + hidden + ' টা দেখাও'));
+      btn.innerHTML = '<span>' + lbl + '</span><span class="chev">▾</span>';
+      btn.onclick = () => {
+        _analyticsState.catsExpanded = !_analyticsState.catsExpanded;
+        renderExpenseAnalytics();
+      };
+      catsList.appendChild(btn);
+    }
+
     if (!cats.length) {
       const empty = document.createElement('div');
       empty.style.cssText = 'font-size:12.5px;color:var(--text5);padding:12px 0;text-align:center';
@@ -8135,7 +8256,7 @@ function renderExpenseAnalytics() {
     }
   }
 
-  // ── Daily trend chart (modern SVG: smooth area + line + today/peak markers) ──
+  // ── Daily trend chart (vertical "long line" bars — clean, easy to read) ──
   const dailyChart = document.getElementById('expAnDailyChart');
   if (dailyChart) {
     dailyChart.innerHTML = '';
@@ -8150,47 +8271,20 @@ function renderExpenseAnalytics() {
     const dailyAvg = curr.daysActive > 0 ? (curr.total / curr.daysActive) : 0;
 
     // SVG layout (viewBox is fixed; SVG scales to fill container width).
-    const W = 600, H = 200;
-    const padL = 38, padR = 16, padT = 18, padB = 30;
+    const W = 600, H = 220;
+    const padL = 42, padR = 14, padT = 22, padB = 32;
     const chartW = W - padL - padR;
     const chartH = H - padT - padB;
     const yMax = Math.max(maxV, dailyAvg) * 1.10 || 1;
 
-    const xFor = d => padL + ((days <= 1) ? chartW / 2 : ((d - 1) / (days - 1)) * chartW);
+    // Per-day slot width; bar takes ~62% of the slot so adjacent bars feel
+    // like distinct "long lines" with even gaps between them.
+    const slotW = chartW / days;
+    const barW = Math.max(4, Math.min(14, slotW * 0.62));
+
+    const xCenter = d => padL + (d - 0.5) * slotW;
     const yFor = v => padT + (1 - (v / yMax)) * chartH;
     const baselineY = padT + chartH;
-
-    // Build point array.
-    const pts = [];
-    for (let d = 1; d <= days; d++) {
-      const v = curr.byDay.get(d) || 0;
-      pts.push({ x: xFor(d), y: yFor(v), v, d });
-    }
-
-    // Catmull-Rom → cubic Bezier for a buttery smooth line.
-    const smoothPath = (points) => {
-      if (!points.length) return '';
-      if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
-      let path = `M ${points[0].x.toFixed(2)},${points[0].y.toFixed(2)}`;
-      for (let i = 0; i < points.length - 1; i++) {
-        const p0 = i > 0 ? points[i - 1] : points[0];
-        const p1 = points[i];
-        const p2 = points[i + 1];
-        const p3 = (i + 2 < points.length) ? points[i + 2] : p2;
-        const cp1x = p1.x + (p2.x - p0.x) / 6;
-        const cp1y = p1.y + (p2.y - p0.y) / 6;
-        const cp2x = p2.x - (p3.x - p1.x) / 6;
-        const cp2y = p2.y - (p3.y - p1.y) / 6;
-        path += ` C ${cp1x.toFixed(2)},${cp1y.toFixed(2)} ${cp2x.toFixed(2)},${cp2y.toFixed(2)} ${p2.x.toFixed(2)},${p2.y.toFixed(2)}`;
-      }
-      return path;
-    };
-    const linePath = smoothPath(pts);
-    const lastX = pts[pts.length - 1].x;
-    const firstX = pts[0].x;
-    const areaPath = linePath
-      ? `${linePath} L ${lastX.toFixed(2)},${baselineY.toFixed(2)} L ${firstX.toFixed(2)},${baselineY.toFixed(2)} Z`
-      : '';
 
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
@@ -8198,25 +8292,30 @@ function renderExpenseAnalytics() {
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', en ? 'Daily expenses chart' : 'দৈনিক খরচের চার্ট');
+    svg.setAttribute('aria-label', en ? 'Daily expenses bar chart' : 'দৈনিক খরচের চার্ট');
 
-    // <defs>: gradients used by line + area
+    // Gradients used by the bars.
     svg.insertAdjacentHTML('beforeend', `
       <defs>
-        <linearGradient id="expAnAreaGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"  stop-color="#60a5fa" stop-opacity="0.45"/>
-          <stop offset="55%" stop-color="#3b82f6" stop-opacity="0.18"/>
-          <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0.02"/>
-        </linearGradient>
-        <linearGradient id="expAnLineGrad" x1="0" y1="0" x2="1" y2="0">
+        <linearGradient id="expAnBarGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stop-color="#93c5fd"/>
           <stop offset="55%"  stop-color="#60a5fa"/>
           <stop offset="100%" stop-color="#3b82f6"/>
         </linearGradient>
+        <linearGradient id="expAnBarPeakGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#a5b4fc"/>
+          <stop offset="55%"  stop-color="#818cf8"/>
+          <stop offset="100%" stop-color="#4f46e5"/>
+        </linearGradient>
+        <linearGradient id="expAnBarTodayGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#fde68a"/>
+          <stop offset="55%"  stop-color="#fbbf24"/>
+          <stop offset="100%" stop-color="#d97706"/>
+        </linearGradient>
       </defs>
     `);
 
-    // ── Y-axis: 0, average, peak grid lines + value labels on the left.
+    // ── Y-axis: 0, daily-avg, peak — light grid + value labels on the left.
     const yTickVals = [];
     yTickVals.push({ v: 0, label: '৳0' });
     if (dailyAvg > 0) yTickVals.push({ v: dailyAvg, label: _fmtMoney(dailyAvg), isAvg: true });
@@ -8239,24 +8338,51 @@ function renderExpenseAnalytics() {
       svg.appendChild(lbl);
     });
 
-    // ── Area fill and smooth line.
-    if (areaPath) {
-      const area = document.createElementNS(ns, 'path');
-      area.setAttribute('class', 'area-path');
-      area.setAttribute('d', areaPath);
-      svg.appendChild(area);
-    }
-    if (linePath) {
-      const line = document.createElementNS(ns, 'path');
-      line.setAttribute('class', 'line-path');
-      line.setAttribute('d', linePath);
-      svg.appendChild(line);
+    // Baseline.
+    const base = document.createElementNS(ns, 'line');
+    base.setAttribute('class', 'bar-base');
+    base.setAttribute('x1', padL);
+    base.setAttribute('x2', W - padR);
+    base.setAttribute('y1', baselineY);
+    base.setAttribute('y2', baselineY);
+    svg.appendChild(base);
+
+    // ── Bars (one per day). Tall, narrow, rounded — the "long line" look.
+    for (let d = 1; d <= days; d++) {
+      const v = curr.byDay.get(d) || 0;
+      const cx = xCenter(d);
+      const isToday = d === todayD;
+      const isPeak  = (curr.maxDayVal > 0 && d === curr.maxDayNum && !isToday);
+
+      let bx = cx - barW / 2;
+      let by, bh;
+      if (v > 0) {
+        by = yFor(v);
+        bh = baselineY - by;
+      } else {
+        // Show a tiny stub so empty days are still visible on the timeline.
+        bh = 3;
+        by = baselineY - bh;
+      }
+
+      const rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('class', 'day-bar' + (v <= 0 ? ' zero' : '') + (isToday ? ' today' : '') + (isPeak ? ' peak' : ''));
+      rect.setAttribute('x', bx.toFixed(2));
+      rect.setAttribute('y', by.toFixed(2));
+      rect.setAttribute('width', barW.toFixed(2));
+      rect.setAttribute('height', bh.toFixed(2));
+      rect.setAttribute('rx', Math.min(3, barW / 2));
+
+      const t = document.createElementNS(ns, 'title');
+      t.textContent = (en ? monthsEn[m] : months[m]) + ' ' + d + ' — ' + _fmtMoney(v);
+      rect.appendChild(t);
+      svg.appendChild(rect);
     }
 
-    // ── Day ticks at 1, 7, 14, 21, 28, last day.
+    // ── Day ticks / labels.
     const tickDays = Array.from(new Set([1, 7, 14, 21, 28, days])).filter(d => d >= 1 && d <= days).sort((a,b)=>a-b);
     tickDays.forEach(d => {
-      const xx = xFor(d);
+      const xx = xCenter(d);
       const tick = document.createElementNS(ns, 'line');
       tick.setAttribute('class', 'day-tick');
       tick.setAttribute('x1', xx); tick.setAttribute('x2', xx);
@@ -8271,59 +8397,24 @@ function renderExpenseAnalytics() {
       svg.appendChild(lbl);
     });
 
-    // ── Data dots with native tooltips.
-    pts.forEach(p => {
-      const c = document.createElementNS(ns, 'circle');
-      c.setAttribute('class', 'data-dot' + (p.v <= 0 ? ' zero' : ''));
-      c.setAttribute('cx', p.x);
-      c.setAttribute('cy', p.y);
-      c.setAttribute('r', p.v > 0 ? 3 : 1.8);
-      const t = document.createElementNS(ns, 'title');
-      t.textContent = (en ? monthsEn[m] : months[m]) + ' ' + p.d + ' — ' + _fmtMoney(p.v);
-      c.appendChild(t);
-      svg.appendChild(c);
-    });
-
-    // ── Today marker: pulsing ring + dot.
-    if (todayD >= 1 && todayD <= days) {
-      const tp = pts[todayD - 1];
-      const ring = document.createElementNS(ns, 'circle');
-      ring.setAttribute('class', 'today-ring');
-      ring.setAttribute('cx', tp.x);
-      ring.setAttribute('cy', tp.y);
-      ring.setAttribute('r', 7);
-      svg.appendChild(ring);
-
-      const dot = document.createElementNS(ns, 'circle');
-      dot.setAttribute('class', 'today-dot');
-      dot.setAttribute('cx', tp.x);
-      dot.setAttribute('cy', tp.y);
-      dot.setAttribute('r', 3.5);
-      const tt = document.createElementNS(ns, 'title');
-      tt.textContent = (en ? 'Today' : 'আজ') + ' — ' + _fmtMoney(tp.v);
-      dot.appendChild(tt);
-      svg.appendChild(dot);
-    }
-
-    // ── Peak callout above the highest day.
-    if (curr.maxDayVal > 0) {
-      const pk = pts[curr.maxDayNum - 1];
-      const txt = _fmtMoney(curr.maxDayVal);
-      // Estimate text width: ~6.5px per char at 10px font.
+    // ── Peak callout above the highest day (skip if today IS the peak — today
+    // already gets its own gold styling).
+    if (curr.maxDayVal > 0 && curr.maxDayNum !== todayD) {
+      const cx = xCenter(curr.maxDayNum);
+      const cy = yFor(curr.maxDayVal);
+      const txt = '▲ ' + _fmtMoney(curr.maxDayVal);
       const w = Math.max(40, txt.length * 6.5 + 12);
       const h = 18;
-      let cx = pk.x;
-      let cy = pk.y - 14;
-      // Keep callout inside chart area.
       let bx = cx - w / 2;
+      let by = cy - 10;
       if (bx < padL) bx = padL;
       if (bx + w > W - padR) bx = W - padR - w;
-      if (cy - h < 0) cy = pk.y + 22;
+      if (by - h < 0) by = cy + 22;
 
       const rect = document.createElementNS(ns, 'rect');
       rect.setAttribute('class', 'peak-callout-bg');
       rect.setAttribute('x', bx);
-      rect.setAttribute('y', cy - h);
+      rect.setAttribute('y', by - h);
       rect.setAttribute('width', w);
       rect.setAttribute('height', h);
       rect.setAttribute('rx', 9);
@@ -8332,9 +8423,9 @@ function renderExpenseAnalytics() {
       const ptxt = document.createElementNS(ns, 'text');
       ptxt.setAttribute('class', 'peak-callout-text');
       ptxt.setAttribute('x', bx + w / 2);
-      ptxt.setAttribute('y', cy - 4);
+      ptxt.setAttribute('y', by - 4);
       ptxt.setAttribute('text-anchor', 'middle');
-      ptxt.textContent = '▲ ' + txt;
+      ptxt.textContent = txt;
       svg.appendChild(ptxt);
     }
 
