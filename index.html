@@ -1387,6 +1387,45 @@
     box-shadow: 0 8px 26px rgba(59,130,246,0.45), 0 0 0 1px rgba(147,197,253,0.28) inset;
   }
 
+  /* ✨ NEW: Optional quantity row (qty + unit) — appears below the add row */
+  .bazar-qty-wrap {
+    display: grid;
+    grid-template-columns: 1fr 130px;
+    gap: 7px;
+    margin: -6px 0 14px;
+  }
+  .bazar-qty-wrap input,
+  .bazar-qty-wrap select {
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--card2);
+    color: var(--text);
+    font-size: 12.5px;
+    font-family: inherit;
+    transition: border-color .2s;
+  }
+  .bazar-qty-wrap input::placeholder { color: var(--text5); }
+  .bazar-qty-wrap input:focus,
+  .bazar-qty-wrap select:focus {
+    outline: none;
+    border-color: rgba(59,130,246,0.55);
+  }
+  .bazar-qty-wrap input::-webkit-outer-spin-button,
+  .bazar-qty-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .bazar-qty-wrap input[type=number] { -moz-appearance: textfield; }
+
+  /* Small chip showing the quantity + unit on each item (e.g. "5 কেজি") */
+  .bazar-qty-tag {
+    font-size: 10px; padding: 2px 8px; border-radius: 30px;
+    font-weight: 700; letter-spacing: .02em;
+    background: rgba(147,197,253,0.14);
+    color: #93c5fd;
+    border: 1px solid rgba(147,197,253,0.22);
+  }
+  .bazar-item.done .bazar-qty-tag { opacity: 0.7; }
+
   .bazar-filter-row {
     display: flex; gap: 6px; margin-bottom: 12px;
     overflow-x: auto; padding-bottom: 4px;
@@ -4406,6 +4445,20 @@
               </select>
               <button class="bazar-add-btn" onclick="addBazarItemDesktop()">+ যোগ করো</button>
             </div>
+            <div class="bazar-qty-wrap">
+              <input type="number" id="d_bazarQty" placeholder="পরিমাণ (optional) — যেমন 5" inputmode="decimal" min="0" step="any" autocomplete="off" />
+              <select id="d_bazarUnit">
+                <option value="">— একক —</option>
+                <option value="kg">কেজি (kg)</option>
+                <option value="g">গ্রাম (g)</option>
+                <option value="l">লিটার (L)</option>
+                <option value="ml">মিলি (ml)</option>
+                <option value="dozen">ডজন</option>
+                <option value="pcs">পিস</option>
+                <option value="packet">প্যাকেট</option>
+                <option value="bundle">আঁটি</option>
+              </select>
+            </div>
             <div class="bazar-filter-row" id="d_bazarFilters" style="flex-wrap:wrap">
               <div class="bazar-filter-chip active" data-filter="all" onclick="setBazarFilter('all')">📋 সব</div>
               <div class="bazar-filter-chip" data-filter="pending" onclick="setBazarFilter('pending')">⏳ বাকি</div>
@@ -4679,6 +4732,21 @@
           <option value="other">📦 অন্যান্য</option>
         </select>
         <button class="bazar-add-btn" onclick="addBazarItem()">+</button>
+      </div>
+
+      <div class="bazar-qty-wrap">
+        <input type="number" id="bazarQty" placeholder="পরিমাণ (optional) — যেমন 5" inputmode="decimal" min="0" step="any" autocomplete="off" />
+        <select id="bazarUnit">
+          <option value="">— একক —</option>
+          <option value="kg">কেজি (kg)</option>
+          <option value="g">গ্রাম (g)</option>
+          <option value="l">লিটার (L)</option>
+          <option value="ml">মিলি (ml)</option>
+          <option value="dozen">ডজন</option>
+          <option value="pcs">পিস</option>
+          <option value="packet">প্যাকেট</option>
+          <option value="bundle">আঁটি</option>
+        </select>
       </div>
 
       <div class="bazar-filter-row" id="bazarFilters">
@@ -5004,6 +5072,19 @@
     <div class="modal-btns">
       <button class="btn-secondary" onclick="closeAddMoreModal()">বাতিল</button>
       <button class="btn-primary" onclick="confirmAddMore()">✓ যোগ করো</button>
+    </div>
+  </div>
+</div>
+
+<!-- ✨ NEW: Custom confirm modal for bazar list (replaces native confirm()
+     so the buttons work reliably inside PWAs / mobile webviews). -->
+<div class="modal-overlay" id="bazarConfirmModal">
+  <div class="modal">
+    <h2 id="bazarConfirmTitle">নিশ্চিত?</h2>
+    <p id="bazarConfirmMsg" style="white-space:pre-line">Are you sure?</p>
+    <div class="modal-btns">
+      <button type="button" class="btn-secondary" onclick="closeBazarConfirm()">বাতিল</button>
+      <button type="button" class="btn-primary" id="bazarConfirmOk" onclick="acceptBazarConfirm()">✓ হ্যাঁ</button>
     </div>
   </div>
 </div>
@@ -10182,29 +10263,101 @@ function setBazarItems(arr) {
 }
 
 // ✨ NEW: Add now ONLY takes name + category (NO PRICE)
-function _addBazarCommon(nameId, catId) {
+function _addBazarCommon(nameId, catId, qtyId, unitId) {
   const nameInp = document.getElementById(nameId);
   const catSel = document.getElementById(catId);
   const name = nameInp.value.trim();
   if (!name) { showToast('❌ পণ্যের নাম দাও'); return; }
   const cat = catSel.value;
+
+  // ── Optional qty + unit ──
+  const qtyInp = qtyId ? document.getElementById(qtyId) : null;
+  const unitSel = unitId ? document.getElementById(unitId) : null;
+  let qty = null, unit = null;
+  if (qtyInp) {
+    const raw = (qtyInp.value || '').trim();
+    if (raw !== '') {
+      const parsed = parseFloat(raw);
+      if (!isNaN(parsed) && parsed > 0) qty = parsed;
+    }
+  }
+  if (unitSel && unitSel.value) unit = unitSel.value;
+  // qty without unit, or unit without qty → keep whichever is set; both are
+  // optional and independent so the user can write e.g. "1 dozen" or just "5".
+
   const items = getBazarItems();
   items.push({
-    id: Date.now(), name, cat, 
+    id: Date.now(), name, cat,
+    qty: qty,           // ✨ NEW: optional numeric quantity
+    unit: unit,         // ✨ NEW: optional unit (kg/g/l/ml/dozen/pcs/packet/bundle)
     price: 0,           // ✨ default 0 — user list থেকে inline price দেবে
-    done: false, 
+    done: false,
     addedAt: Date.now()
   });
   setBazarItems(items);
   nameInp.value = '';
+  if (qtyInp) qtyInp.value = '';
+  if (unitSel) unitSel.value = '';
   nameInp.focus();
   renderBazar();
   onBazarItemAdded(); // ← trigger banner
   showToast('🛒 ' + name + ' যোগ হয়েছে');
 }
 
-function addBazarItem() { _addBazarCommon('bazarName','bazarCat'); }
-function addBazarItemDesktop() { _addBazarCommon('d_bazarName','d_bazarCat'); }
+function addBazarItem() { _addBazarCommon('bazarName','bazarCat','bazarQty','bazarUnit'); }
+function addBazarItemDesktop() { _addBazarCommon('d_bazarName','d_bazarCat','d_bazarQty','d_bazarUnit'); }
+
+// ✨ NEW: Format an item's qty + unit for display (e.g. "5 কেজি", "2 dozen")
+function getUnitLabel(unit) {
+  if (!unit) return '';
+  const bn = {
+    kg: 'কেজি', g: 'গ্রাম', l: 'লিটার', ml: 'মিলি',
+    dozen: 'ডজন', pcs: 'পিস', packet: 'প্যাকেট', bundle: 'আঁটি'
+  };
+  const en = {
+    kg: 'kg', g: 'g', l: 'L', ml: 'ml',
+    dozen: 'dozen', pcs: 'pcs', packet: 'packet', bundle: 'bundle'
+  };
+  const map = (typeof currentLang !== 'undefined' && currentLang === 'en') ? en : bn;
+  return map[unit] || unit;
+}
+function formatBazarQty(item) {
+  if (!item) return '';
+  const hasQty  = item.qty != null && item.qty !== '' && !isNaN(parseFloat(item.qty)) && parseFloat(item.qty) > 0;
+  const hasUnit = !!item.unit;
+  if (!hasQty && !hasUnit) return '';
+  if (hasQty && hasUnit) return parseFloat(item.qty) + ' ' + getUnitLabel(item.unit);
+  if (hasQty) return String(parseFloat(item.qty));
+  return getUnitLabel(item.unit); // unit only, no qty
+}
+
+// ✨ NEW: Custom confirm modal helpers (replaces native confirm() so the
+// "কেনা ক্লিয়ার" / "সব মুছে দাও" buttons reliably work on mobile / PWA).
+let _bazarConfirmCb = null;
+function openBazarConfirm(title, msg, okText, onOk) {
+  const modal = document.getElementById('bazarConfirmModal');
+  if (!modal) { if (onOk) onOk(); return; }
+  document.getElementById('bazarConfirmTitle').textContent = title || 'নিশ্চিত?';
+  document.getElementById('bazarConfirmMsg').textContent   = msg   || '';
+  document.getElementById('bazarConfirmOk').textContent    = okText || '✓ হ্যাঁ';
+  _bazarConfirmCb = typeof onOk === 'function' ? onOk : null;
+  modal.classList.add('open');
+}
+function closeBazarConfirm() {
+  const modal = document.getElementById('bazarConfirmModal');
+  if (modal) modal.classList.remove('open');
+  _bazarConfirmCb = null;
+}
+function acceptBazarConfirm() {
+  const cb = _bazarConfirmCb;
+  closeBazarConfirm();
+  if (cb) cb();
+}
+// Tap-on-backdrop closes the confirm modal.
+document.addEventListener('DOMContentLoaded', () => {
+  const m = document.getElementById('bazarConfirmModal');
+  if (m) m.addEventListener('click', e => { if (e.target === m) closeBazarConfirm(); });
+});
 
 // ✨ NEW: Update price inline — automatically syncs with daily expense
 function updateBazarPrice(itemId, newPrice) {
@@ -10233,9 +10386,10 @@ function updateBazarPrice(itemId, newPrice) {
         } else {
           // doesn't exist — add new
           const cat = getBazarCatInfo(item.cat);
+          const qStr = formatBazarQty(item);
           dayData.expenses.push({
             id: expenseId,
-            name: cat.emoji + ' ' + item.name,
+            name: cat.emoji + ' ' + item.name + (qStr ? ' (' + qStr + ')' : ''),
             amt: price,
             fromBazar: true,
             bazarItemId: item.id
@@ -10284,9 +10438,10 @@ function toggleBazarItem(id) {
       
       if (!exists) {
         const cat = getBazarCatInfo(item.cat);
+        const qStr = formatBazarQty(item);
         dayData.expenses.push({
           id: expenseId,
-          name: cat.emoji + ' ' + item.name,
+          name: cat.emoji + ' ' + item.name + (qStr ? ' (' + qStr + ')' : ''),
           amt: item.price,
           fromBazar: true,
           bazarItemId: item.id
@@ -10361,19 +10516,32 @@ function clearBazarDone() {
   const items = getBazarItems();
   const doneCount = items.filter(x => x.done).length;
   if (!doneCount) { showToast('কেনা item নেই'); return; }
-  if (!confirm(doneCount + ' টি কেনা item মুছে দেবে?\n(Expense রেকর্ড থাকবে)')) return;
-  setBazarItems(items.filter(x => !x.done));
-  renderBazar();
-  showToast('🧹 ' + doneCount + ' টি ক্লিয়ার হয়েছে');
+  openBazarConfirm(
+    '🧹 কেনা items ক্লিয়ার',
+    doneCount + ' টি কেনা item মুছে দেবে?\n(Expense রেকর্ড থাকবে)',
+    '✓ মুছে দাও',
+    () => {
+      const cur = getBazarItems();
+      setBazarItems(cur.filter(x => !x.done));
+      renderBazar();
+      showToast('🧹 ' + doneCount + ' টি ক্লিয়ার হয়েছে');
+    }
+  );
 }
 
 function clearAllBazar() {
   const items = getBazarItems();
   if (!items.length) { showToast('লিস্ট খালি'); return; }
-  if (!confirm('পুরো লিস্ট মুছে দেবে?\n(কেনা items এর expense রেকর্ড থাকবে)')) return;
-  setBazarItems([]);
-  renderBazar();
-  showToast('🗑️ সব ক্লিয়ার হয়েছে');
+  openBazarConfirm(
+    '🗑️ পুরো লিস্ট মুছে দাও',
+    'পুরো লিস্ট মুছে দেবে?\n(কেনা items এর expense রেকর্ড থাকবে)',
+    '✓ সব মুছো',
+    () => {
+      setBazarItems([]);
+      renderBazar();
+      showToast('🗑️ সব ক্লিয়ার হয়েছে');
+    }
+  );
 }
 
 function buildBazarListInto(listEl, filtered, total) {
@@ -10423,6 +10591,15 @@ function buildBazarListInto(listEl, filtered, total) {
     catTag.className = 'bazar-cat-tag ' + cat.class;
     catTag.textContent = cat.label;
     meta.appendChild(catTag);
+
+    // ✨ NEW: show optional quantity (e.g. "5 কেজি", "2 ডজন")
+    const qtyText = formatBazarQty(item);
+    if (qtyText) {
+      const qtyTag = document.createElement('span');
+      qtyTag.className = 'bazar-qty-tag';
+      qtyTag.textContent = qtyText;
+      meta.appendChild(qtyTag);
+    }
     
     if (item.done && item.expenseDateKey && item.price > 0) {
       const expTag = document.createElement('span');
