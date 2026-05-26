@@ -3,8 +3,8 @@
 // Strategy: network-first (always try fresh content), fall back to cache when offline.
 // Updated automatically on each deploy via the CACHE_NAME bump below.
 
-const CACHE_NAME = 'daily-life-v1';
-const SHELL_URLS = ['/', '/index.html'];
+const CACHE_NAME = 'daily-life-v2';
+const SHELL_URLS = ['/', '/index.html', '/about.html', '/privacy.html', '/terms.html', '/manifest.json'];
 
 // Install: pre-cache the app shell so first offline launch works.
 self.addEventListener('install', (event) => {

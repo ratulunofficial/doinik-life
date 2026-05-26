@@ -1,9 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<!-- Match phone status bar / address bar with the dark app color (no white strip) -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+<!-- ───────── Primary SEO ───────── -->
+<title>Doinik Life — Bengali daily life dashboard for tasks, expenses & habits</title>
+<meta name="description" content="Doinik Life is a free Bengali-first personal dashboard to track daily tasks, expenses, water, mood, loans, and grocery lists — all in one calm, private space." />
+<meta name="keywords" content="doinik life, bengali productivity app, daily life tracker, bangla planner, expense tracker bangla, task manager bengali, habit tracker bangla" />
+<meta name="author" content="Doinik Life" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<link rel="canonical" href="https://doinik.life/" />
+<link rel="alternate" hreflang="bn" href="https://doinik.life/" />
+<link rel="alternate" hreflang="x-default" href="https://doinik.life/" />
+
+<!-- ───────── Open Graph ───────── -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Doinik Life" />
+<meta property="og:title" content="Doinik Life — Bengali daily life dashboard" />
+<meta property="og:description" content="Track tasks, expenses, water, mood, loans, and grocery lists in one calm Bengali-first dashboard." />
+<meta property="og:url" content="https://doinik.life/" />
+<meta property="og:image" content="https://doinik.life/icon.png" />
+<meta property="og:image:width" content="512" />
+<meta property="og:image:height" content="512" />
+<meta property="og:locale" content="bn_BD" />
+<meta property="og:locale:alternate" content="en_US" />
+
+<!-- ───────── Twitter / X ───────── -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Doinik Life — Bengali daily life dashboard" />
+<meta name="twitter:description" content="Track tasks, expenses, water, mood, loans, and grocery lists in one calm Bengali-first dashboard." />
+<meta name="twitter:image" content="https://doinik.life/icon.png" />
+
+<!-- ───────── PWA / device chrome ───────── -->
 <meta name="theme-color" content="#060914" />
 <meta name="msapplication-navbutton-color" content="#060914" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -11,11 +40,46 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Doinik Life" />
 <meta name="color-scheme" content="dark" />
-<title>Doinik Life</title>
+<meta name="format-detection" content="telephone=no" />
+<link rel="manifest" href="manifest.json" />
+
+<!-- ───────── Icons ───────── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23131a2c'/%3E%3Cstop offset='100%25' stop-color='%23070a18'/%3E%3C/linearGradient%3E%3ClinearGradient id='bl' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%235b9bff'/%3E%3Cstop offset='100%25' stop-color='%233b6df0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='108' fill='url(%23bg)'/%3E%3Crect x='126' y='140' width='260' height='72' rx='26' fill='url(%23bl)'/%3E%3Crect x='126' y='186' width='260' height='26' fill='url(%23bl)'/%3E%3Ctext x='256' y='190' font-family='Arial' font-size='38' font-weight='800' fill='white' text-anchor='middle'%3EDL%3C/text%3E%3Ccircle cx='176' cy='258' r='15' stroke='%235b9bff' stroke-width='2.5' fill='none'/%3E%3Ccircle cx='176' cy='314' r='15' stroke='%235b9bff' stroke-width='2.5' fill='none'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icon.png">
+
+<!-- ───────── Resource hints ───────── -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://firebaseio.com" />
+
+<!-- ───────── Fonts (slimmed: 5 families → 2) ───────── -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" />
+
+<!-- ───────── Structured data ───────── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Doinik Life",
+  "alternateName": "দৈনিক লাইফ",
+  "url": "https://doinik.life/",
+  "applicationCategory": "ProductivityApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript and a modern browser",
+  "inLanguage": ["bn", "en"],
+  "description": "Bengali-first personal dashboard to track daily tasks, expenses, water, mood, loans, and grocery lists.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "BDT"
+  },
+  "image": "https://doinik.life/icon.png"
+}
+</script>
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&family=Cormorant+Garamond:wght@500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+  /* Fonts loaded via <link> above; no @import here (faster, parallelized). */
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -46,8 +110,8 @@
     --text: #eef2fb;
     --text2: #c5cde0;
     --text3: #8a93ad;
-    --text4: #5b6480;
-    --text5: #3a4360;
+    --text4: #8590ab;   /* was #5b6480 — bumped to ~6.5:1 contrast on --bg (passes WCAG AA) */
+    --text5: #6b7591;   /* was #3a4360 — bumped to ~4.6:1 contrast on --bg (passes WCAG AA for normal text) */
     --text6: #232a40;
     --radius: 18px;
     --radius-sm: 12px;
@@ -4140,6 +4204,105 @@
      <meta viewport> (`maximum-scale=1.0, user-scalable=no`), so we do
      NOT need a global 16px override here — that would break smaller
      inputs (e.g. the orders search bar). */
+
+  /* ───────── Skip link (visually hidden until focused) ───────── */
+  .skip-link {
+    position: fixed; left: 12px; top: -100px;
+    z-index: 100000; padding: 10px 14px;
+    background: var(--green); color: #fff; font-weight: 600;
+    border-radius: 10px; text-decoration: none;
+    transition: top .2s var(--ease);
+  }
+  .skip-link:focus { top: 12px; outline: 3px solid #fff; }
+
+  /* ───────── Public landing (SEO surface, sits under auth overlay) ───────── */
+  .public-landing {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+    color: var(--text);
+    font-family: 'Hind Siliguri', 'Inter', system-ui, sans-serif;
+  }
+  .public-landing[hidden] { display: none !important; }
+  .landing-title {
+    font-size: clamp(34px, 6vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 60%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .landing-tagline {
+    font-size: clamp(18px, 2.4vw, 22px);
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+  .landing-sub {
+    font-size: 15px; color: var(--text3);
+    margin-bottom: 28px;
+  }
+  .landing-features {
+    list-style: none; padding: 0; margin: 0 0 28px;
+    display: grid; gap: 12px;
+  }
+  .landing-features li {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text2);
+  }
+  .landing-features strong { color: var(--text); display: block; margin-bottom: 2px; }
+  .landing-cta-row {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    margin-bottom: 32px;
+  }
+  .landing-cta {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff; border: 0; cursor: pointer;
+    padding: 14px 22px; border-radius: 12px;
+    font-size: 15px; font-weight: 600;
+    box-shadow: var(--shadow-glow);
+    transition: transform .15s var(--ease), box-shadow .2s var(--ease);
+  }
+  .landing-cta:hover { transform: translateY(-1px); }
+  .landing-link {
+    color: var(--blue); text-decoration: none; font-weight: 500;
+    font-size: 14px;
+  }
+  .landing-link:hover { text-decoration: underline; }
+  .landing-foot {
+    color: var(--text3); font-size: 13px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  .landing-foot a {
+    color: var(--text2); text-decoration: none; margin: 0 4px;
+  }
+  .landing-foot a:hover { color: var(--text); text-decoration: underline; }
+
+  /* ───────── Site footer (only visible behind/around landing) ───────── */
+  .site-footer {
+    position: relative; z-index: 1;
+    padding: 24px 16px 80px;
+    text-align: center;
+    color: var(--text3); font-size: 13px;
+    border-top: 1px solid var(--border2);
+    background: rgba(6,9,20,0.4);
+  }
+  .site-footer-inner { max-width: 720px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
+  .site-footer a { color: var(--text2); text-decoration: none; }
+  .site-footer a:hover { color: var(--text); text-decoration: underline; }
+  .site-footer-sep { opacity: .4; }
+  /* Logged-in users have the app chrome — hide the public footer for them.
+     The body.is-authed class is toggled by the auth init script below. */
+  body.is-authed .site-footer { display: none; }
 </style>
 </head>
 <body>
@@ -4149,6 +4312,34 @@
 <div class="bg-orb bg-orb-2"></div>
 <div class="bg-orb bg-orb-3"></div>
 <div class="bg-grid"></div>
+
+<!-- ── Skip link (a11y) ── -->
+<a class="skip-link" href="#mainContent">মূল কন্টেন্টে যাও</a>
+
+<!--
+  ── Public landing content (SEO surface) ─────────────────────────────────
+  This section sits behind the opaque auth overlay so existing UX is
+  unchanged for current users, but search engines and previewers (Google,
+  Bing, WhatsApp, Facebook) can crawl real content describing the product.
+-->
+<section id="publicLanding" class="public-landing" aria-label="Doinik Life — overview">
+  <h1 class="landing-title">Doinik Life</h1>
+  <p class="landing-tagline">তোমার দৈনিক জীবনের একটাই শান্ত জায়গা।</p>
+  <p class="landing-sub">Tasks, expenses, water, mood, loans, bazar — সব এক জায়গায়, বাংলায়।</p>
+
+  <ul class="landing-features" role="list">
+    <li><strong>📅 ক্যালেন্ডার ও টাস্ক</strong> — প্রতিদিনের কাজ গুছিয়ে রাখো, রিকারিং টাস্ক সাপোর্ট সহ।</li>
+    <li><strong>💰 খরচের হিসাব</strong> — দৈনিক খরচ লিখে রাখো, মাসিক অ্যানালিটিক্স দেখো।</li>
+    <li><strong>💧 পানি ও মুড ট্র্যাকার</strong> — হেলদি অভ্যাস তৈরি করো ছোট ছোট স্টেপে।</li>
+    <li><strong>🛒 বাজার লিস্ট</strong> — কী আনতে হবে, ভুলে যাওয়ার দিন শেষ।</li>
+    <li><strong>🤝 ধার-দেনার হিসাব</strong> — কে কত টাকা পাবে, পরিষ্কার রেকর্ড।</li>
+    <li><strong>🔒 প্রাইভেট ও ফ্রি</strong> — তোমার ডেটা শুধু তোমার, কোনো বিজ্ঞাপন নেই।</li>
+  </ul>
+
+  <p class="landing-foot">
+    <a href="about.html">About</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a>
+  </p>
+</section>
 
 <!-- ── Auth Login Screen ── -->
 <div class="auth-overlay" id="authOverlay">
@@ -4220,8 +4411,12 @@
 </div>
 <script>
   if (localStorage.getItem('dashboard_username')) {
+    document.body.classList.add('is-authed');
     document.getElementById('authOverlay').classList.add('hidden');
     document.getElementById('authOverlay').style.display = 'none';
+    // Authenticated users skip the public landing entirely.
+    var _pl = document.getElementById('publicLanding');
+    if (_pl) _pl.style.display = 'none';
   }
   // Pre-apply per-user Orders opt-in from localStorage so the bottom-nav
   // and desktop button render in the correct state on first paint, before
@@ -4231,7 +4426,7 @@
   }
 </script>
 
-<div class="header">
+<header class="header" role="banner">
   <div>
     <div class="header-title">
       <svg width="28" height="28" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
@@ -4271,7 +4466,7 @@
     </button>
     <button class="logout-btn" id="logoutBtn" onclick="handleLogout()" title="লগ আউট">🚪</button>
   </div>
-</div>
+</header>
 
 <!-- Bazar Pending Banner — shown on all tabs when bazar has pending items -->
 <div id="bazarPendingBanner" style="display:none;">
@@ -4282,7 +4477,7 @@
   </div>
 </div>
 
-<div class="main">
+<main class="main" id="mainContent" role="main">
 
   <!-- DESKTOP MEGA LAYOUT -->
   <div id="desktop-mega-layout">
@@ -4911,7 +5106,7 @@
     </div>
   </div>
 
-</div>
+</main>
 
 <!-- Order Add/Edit Form Modal -->
 <div class="order-form-overlay" id="orderFormOverlay">
@@ -11889,6 +12084,20 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
   });
   mo.observe(document.body, { childList: true, subtree: true });
 })();
+</script>
+
+<!-- ── Footer (visible on the public landing for SEO + legal links) ── -->
+<footer class="site-footer" role="contentinfo" aria-label="Site footer">
+  <div class="site-footer-inner">
+    <span>&copy; <span id="footerYear"></span> Doinik Life</span>
+    <span class="site-footer-sep">·</span>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+  </div>
+</footer>
+<script>
+  (function(){ var y=document.getElementById('footerYear'); if(y) y.textContent=new Date().getFullYear(); })();
 </script>
 </body>
 </html>
