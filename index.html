@@ -4104,6 +4104,42 @@
   .task-cb, .day-task-cb, .card {
     transition-timing-function: var(--ease-app) !important;
   }
+
+  /* ─────────────────────────────────────────────
+     📱 MOBILE TYPING CURSOR FIX
+     iOS Safari / mobile WebKit bug: backdrop-filter on input/textarea
+     elements causes the text caret to be drawn in the wrong position
+     when the user taps an input. Also any `transform` transition on
+     inputs (or transformed ancestors) can offset the caret hit-area.
+     This block neutralises both issues without changing the visual
+     style noticeably (inputs already sit on a tinted glass background).
+     ───────────────────────────────────────────── */
+  input,
+  select,
+  textarea,
+  [contenteditable="true"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    will-change: auto !important;
+  }
+  /* Strip `transform` from the input transition list so focus/hover
+     state changes never trigger a sub-pixel shift that would jump the
+     caret. We keep colour / shadow / border transitions. */
+  input,
+  select,
+  textarea {
+    transition:
+      box-shadow .25s ease,
+      border-color .25s ease,
+      background-color .25s ease,
+      color .2s ease !important;
+  }
+  /* iOS auto-zoom on focus is already disabled via the page's
+     <meta viewport> (`maximum-scale=1.0, user-scalable=no`), so we do
+     NOT need a global 16px override here — that would break smaller
+     inputs (e.g. the orders search bar). */
 </style>
 </head>
 <body>
