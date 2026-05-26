@@ -361,6 +361,13 @@
 
   .main { padding: 16px 14px 100px; max-width: 1400px; margin: 0 auto; }
   .section { display: block; }
+  /* Smoothness: let the browser skip rendering work for sections that are
+     scrolled off-screen (mostly only relevant in the desktop mega layout
+     where every section shares the same scroll container). */
+  .section { contain: layout style; }
+  @supports (content-visibility: auto) {
+    .section { content-visibility: auto; contain-intrinsic-size: 700px 1200px; }
+  }
 
   .dash { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .card {
@@ -500,13 +507,40 @@
   }
   .exp-analytics-btn:active { transform: scale(0.92); }
 
-  /* ── Monthly Expense Analytics modal ── */
-  .expense-analytics-modal {
-    max-width: 520px;
-    padding: 20px 20px 22px;
+  /* ── Monthly Expense Analytics — inline panel inside the card ── */
+  /* The panel by default lives inside #expAnHome (display:none on parent).
+     When opened, JS moves it into the active .card and toggles
+     `.analytics-inline-mode` on that card. */
+  .exp-an-inline-panel {
+    width: 100%;
   }
-  .expense-analytics-modal h2 { font-size: 17px; font-weight: 800; }
-  .expense-analytics-modal p  { font-size: 12.5px; }
+  .exp-an-inline-panel h2 { font-size: 17px; font-weight: 800; color: #fff; }
+  .exp-an-inline-panel p  { font-size: 12.5px; color: var(--text4); }
+
+  /* When a card is in analytics mode, hide its other children so the panel
+     replaces the card content — this is the "show right here" behavior. */
+  .card.analytics-inline-mode > *:not(.exp-an-inline-panel) {
+    display: none !important;
+  }
+  /* Subtle highlight on the host card. */
+  .card.analytics-inline-mode {
+    border-color: rgba(96,165,250,0.32);
+    box-shadow: 0 8px 26px rgba(59,130,246,0.18), var(--shadow-sm);
+    transition: border-color .25s var(--ease-out), box-shadow .25s var(--ease-out);
+  }
+
+  /* Slide-in animation when the panel mounts. */
+  @keyframes expAnSlideIn {
+    from { opacity: 0; transform: translate3d(0, -6px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .exp-an-inline-panel.exp-an-anim {
+    animation: expAnSlideIn .26s cubic-bezier(.16,1,.3,1) both;
+    will-change: transform, opacity;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .exp-an-inline-panel.exp-an-anim { animation: none !important; }
+  }
   .exp-an-head {
     display: flex; align-items: flex-start; justify-content: space-between;
     gap: 10px; margin-bottom: 14px;
@@ -689,43 +723,78 @@
   .exp-an-row-delta.new  { color: #fbbf24; }
 
   .exp-an-daily-chart {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    gap: 2px;
-    height: 110px;
-    padding: 6px 4px 0;
-    border-bottom: 1px solid var(--border2);
-    margin-bottom: 10px;
-    overflow-x: auto;
-  }
-  .exp-an-daily-bar {
-    flex: 1; min-width: 6px;
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    height: 100%;
     position: relative;
-  }
-  .exp-an-daily-bar-fill {
     width: 100%;
-    background: linear-gradient(180deg, #60a5fa 0%, #1e40af 100%);
-    border-radius: 4px 4px 0 0;
-    transition: height .35s ease;
-    min-height: 1px;
+    margin-bottom: 10px;
+    contain: layout paint;
   }
-  .exp-an-daily-bar.zero .exp-an-daily-bar-fill {
-    background: var(--card3);
-    opacity: 0.5;
+  .exp-an-daily-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
   }
-  .exp-an-daily-bar.today .exp-an-daily-bar-fill {
-    background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
-    box-shadow: 0 0 12px rgba(251,191,36,0.4);
+  .exp-an-daily-svg .grid-line  { stroke: rgba(120,160,255,0.10); stroke-width: 1; }
+  .exp-an-daily-svg .avg-line   { stroke: rgba(147,197,253,0.55); stroke-width: 1.2; stroke-dasharray: 4 4; }
+  .exp-an-daily-svg .axis-label { fill: var(--text5); font-size: 9.5px; font-weight: 600; font-family: inherit; }
+  .exp-an-daily-svg .axis-tick  { fill: var(--text5); font-size: 9.5px; font-weight: 600; font-family: inherit; }
+  .exp-an-daily-svg .area-path  { fill: url(#expAnAreaGrad); }
+  .exp-an-daily-svg .line-path  {
+    fill: none;
+    stroke: url(#expAnLineGrad);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 2px 8px rgba(96,165,250,0.45));
   }
-  .exp-an-daily-bar-day {
-    font-size: 8.5px; color: var(--text5); margin-top: 2px;
-    font-weight: 600;
+  .exp-an-daily-svg .data-dot {
+    fill: #60a5fa;
+    stroke: #0a0f1f;
+    stroke-width: 1.5;
+    transition: r .15s var(--ease-out), fill .15s var(--ease-out);
   }
+  .exp-an-daily-svg .data-dot.zero { fill: rgba(120,160,255,0.18); }
+  .exp-an-daily-svg .data-dot:hover { r: 5; fill: #93c5fd; }
+  .exp-an-daily-svg .today-ring {
+    fill: none;
+    stroke: #fbbf24;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 6px rgba(251,191,36,0.7));
+  }
+  .exp-an-daily-svg .today-dot {
+    fill: #fbbf24;
+    stroke: #1a1305;
+    stroke-width: 1.5;
+  }
+  .exp-an-daily-svg .peak-callout-bg {
+    fill: rgba(15,22,40,0.92);
+    stroke: rgba(96,165,250,0.55);
+    stroke-width: 1;
+  }
+  .exp-an-daily-svg .peak-callout-text {
+    fill: #93c5fd;
+    font-size: 10px;
+    font-weight: 800;
+    font-family: inherit;
+  }
+  .exp-an-daily-svg .day-tick {
+    stroke: rgba(120,160,255,0.22);
+    stroke-width: 1;
+  }
+  .exp-an-daily-svg .day-label {
+    fill: var(--text4);
+    font-size: 9.5px;
+    font-weight: 700;
+    font-family: inherit;
+    text-anchor: middle;
+  }
+  .exp-an-daily-svg .day-label.today { fill: #fbbf24; }
   .exp-an-daily-summary {
     display: flex; justify-content: space-between; gap: 8px;
     font-size: 11px; color: var(--text4);
-    padding: 4px 2px;
+    padding: 6px 2px 0;
+    margin-top: 4px;
+    border-top: 1px solid var(--border2);
   }
   .exp-an-daily-summary b { color: var(--text2); font-weight: 700; }
 
@@ -752,8 +821,7 @@
   .exp-an-tip b { color: #fbbf24; font-weight: 700; }
 
   @media (max-width: 480px) {
-    .expense-analytics-modal { padding: 16px 14px 18px; }
-    .expense-analytics-modal h2 { font-size: 15px; }
+    .exp-an-inline-panel h2 { font-size: 15px; }
     .exp-an-total-amt { font-size: 22px; }
     .exp-an-stat-val { font-size: 13px; }
     .exp-an-tab { font-size: 11px; padding: 7px 6px; }
@@ -4116,7 +4184,7 @@
       <div class="desktop-col">
         <div class="card">
           <div class="sec-label">💰 Daily Expense</div>
-          <button type="button" class="exp-analytics-btn" onclick="openExpenseAnalytics()" title="Monthly Analytics" aria-label="Monthly Analytics">📊</button>
+          <button type="button" class="exp-analytics-btn" onclick="openExpenseAnalytics(this)" title="Monthly Analytics" aria-label="Monthly Analytics">📊</button>
           <div class="monthly-total-bar">
             <span class="monthly-label" id="d_monthlyLabel">এই মাসের মোট</span>
             <span class="monthly-amount" id="d_monthlyTotal">৳0</span>
@@ -4396,7 +4464,7 @@
 
       <div class="card desktop-expense-card">
         <div class="sec-label">Daily Expense</div>
-        <button type="button" class="exp-analytics-btn" onclick="openExpenseAnalytics()" title="Monthly Analytics" aria-label="Monthly Analytics">📊</button>
+        <button type="button" class="exp-analytics-btn" onclick="openExpenseAnalytics(this)" title="Monthly Analytics" aria-label="Monthly Analytics">📊</button>
         <div class="monthly-total-bar">
           <span class="monthly-label" id="monthlyLabel">এই মাসের মোট</span>
           <span class="monthly-amount" id="monthlyTotal">৳0</span>
@@ -4444,7 +4512,7 @@
   <div class="section" id="sec-expense">
     <div class="card mobile-only">
       <div class="sec-label">Daily Expense 💰</div>
-      <button type="button" class="exp-analytics-btn" onclick="openExpenseAnalytics()" title="Monthly Analytics" aria-label="Monthly Analytics">📊</button>
+      <button type="button" class="exp-analytics-btn" onclick="openExpenseAnalytics(this)" title="Monthly Analytics" aria-label="Monthly Analytics">📊</button>
       <div class="monthly-total-bar">
         <span class="monthly-label" id="mMonthlyLabel">এই মাসের মোট</span>
         <span class="monthly-amount" id="mMonthlyTotal">৳0</span>
@@ -4878,9 +4946,12 @@
   </div>
 </div>
 
-<!-- Monthly Expense Analytics Modal -->
-<div class="modal-overlay" id="expenseAnalyticsModal" onclick="onExpenseAnalyticsBackdrop(event)">
-  <div class="modal expense-analytics-modal">
+<!-- Monthly Expense Analytics — INLINE panel.
+     Lives in a hidden home by default. When the 📊 button on any expense card
+     is clicked, this panel is moved into that card so the analytics show up
+     "right there" instead of opening a full-screen modal/window. -->
+<div id="expAnHome" hidden aria-hidden="true">
+  <div class="exp-an-inline-panel" id="expAnPanel" role="region" aria-label="Monthly Analytics">
     <div class="exp-an-head">
       <div>
         <h2 id="expAnTitle" style="margin-bottom:2px">📊 Monthly Analytics</h2>
@@ -4969,7 +5040,7 @@
       </div>
     </div>
 
-    <div class="modal-btns">
+    <div class="modal-btns" style="margin-top:14px">
       <button class="btn-primary" onclick="closeExpenseAnalytics()" id="expAnCloseBtn">✓ ঠিক আছে</button>
     </div>
   </div>
@@ -5335,10 +5406,10 @@ function refreshLanguageSensitiveUi() {
   try { renderBazar(); } catch(_) {}
   try { renderNotes(); } catch(_) {}
   try { showDayPanel(selectedDateKey); } catch(_) {}
-  // If the Monthly Analytics modal is open, re-render so labels flip language.
+  // If the Monthly Analytics inline panel is open, re-render so labels flip language.
   try {
-    const anEl = document.getElementById('expenseAnalyticsModal');
-    if (anEl && anEl.classList.contains('open')) {
+    const anEl = document.getElementById('expAnPanel');
+    if (anEl && anEl.closest('.card.analytics-inline-mode')) {
       const sel = document.getElementById('expAnMonthSelect');
       if (sel) {
         const cur = sel.value;
@@ -7677,7 +7748,35 @@ function _fmtPctDelta(curr, prev) {
   return { text: arrow + ' ' + Math.abs(pct).toFixed(0) + '%', cls };
 }
 
-function openExpenseAnalytics() {
+function openExpenseAnalytics(btn) {
+  // Find which expense card the user clicked from. Falls back to the first
+  // visible analytics button on the page.
+  let card = null;
+  if (btn && typeof btn.closest === 'function') {
+    card = btn.closest('.card');
+  }
+  if (!card) {
+    const allBtns = document.querySelectorAll('.exp-analytics-btn');
+    for (const b of allBtns) {
+      // Pick the first one that's actually on screen.
+      if (b.offsetParent !== null) { card = b.closest('.card'); break; }
+    }
+  }
+  if (!card) return;
+
+  const panel = document.getElementById('expAnPanel');
+  if (!panel) return;
+
+  // If the panel is already open in another card, close that first so siblings
+  // there get restored.
+  document.querySelectorAll('.card.analytics-inline-mode').forEach(c => {
+    if (c !== card) c.classList.remove('analytics-inline-mode');
+  });
+
+  // Move the panel into this card (DOM-move preserves event listeners and state).
+  card.appendChild(panel);
+  card.classList.add('analytics-inline-mode');
+
   _analyticsState.monthList = getAnalyticsMonthList();
   // Default to current calendar month (or the most recent one with data).
   const cy = (calDate || today).getFullYear();
@@ -7702,7 +7801,7 @@ function openExpenseAnalytics() {
   }
 
   // Reset tabs.
-  document.querySelectorAll('#expenseAnalyticsModal .exp-an-tab').forEach(b => {
+  document.querySelectorAll('#expAnPanel .exp-an-tab').forEach(b => {
     b.classList.toggle('active', b.dataset.anTab === 'items');
   });
   const pi = document.getElementById('expAnPanelItems');
@@ -7715,18 +7814,40 @@ function openExpenseAnalytics() {
   applyAnalyticsLanguage();
   renderExpenseAnalytics();
 
-  const m = document.getElementById('expenseAnalyticsModal');
-  if (m) m.classList.add('open');
+  // Replay the slide-in animation each time it opens.
+  panel.classList.remove('exp-an-anim');
+  // Force reflow so the animation restarts.
+  // eslint-disable-next-line no-unused-expressions
+  void panel.offsetWidth;
+  panel.classList.add('exp-an-anim');
+
+  // Smoothly bring the analytics into view (especially on mobile where it
+  // may be far down the page).
+  try {
+    requestAnimationFrame(() => {
+      const r = card.getBoundingClientRect();
+      if (r.top < 0 || r.top > window.innerHeight * 0.4) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  } catch (_) {}
 }
 
 function closeExpenseAnalytics() {
-  const m = document.getElementById('expenseAnalyticsModal');
-  if (m) m.classList.remove('open');
+  const panel = document.getElementById('expAnPanel');
+  const home = document.getElementById('expAnHome');
+  if (!panel || !home) return;
+  const card = panel.closest('.card');
+  if (card) card.classList.remove('analytics-inline-mode');
+  // Move the panel back to its hidden home so the card's normal content
+  // is fully visible again.
+  home.appendChild(panel);
+  panel.classList.remove('exp-an-anim');
 }
 
-function onExpenseAnalyticsBackdrop(e) {
-  if (e && e.target && e.target.id === 'expenseAnalyticsModal') closeExpenseAnalytics();
-}
+// Backdrop handler kept for backward compatibility — no-op now that the panel
+// renders inline rather than as a full-screen overlay.
+function onExpenseAnalyticsBackdrop(_e) { /* inline panel: no backdrop */ }
 
 function onAnalyticsMonthChange() {
   const sel = document.getElementById('expAnMonthSelect');
@@ -7756,7 +7877,7 @@ function changeAnalyticsMonth(dir) {
 
 function switchAnalyticsTab(tab) {
   _analyticsState.tab = tab;
-  document.querySelectorAll('#expenseAnalyticsModal .exp-an-tab').forEach(b => {
+  document.querySelectorAll('#expAnPanel .exp-an-tab').forEach(b => {
     b.classList.toggle('active', b.dataset.anTab === tab);
   });
   const pi = document.getElementById('expAnPanelItems');
@@ -8014,7 +8135,7 @@ function renderExpenseAnalytics() {
     }
   }
 
-  // ── Daily trend chart ──
+  // ── Daily trend chart (modern SVG: smooth area + line + today/peak markers) ──
   const dailyChart = document.getElementById('expAnDailyChart');
   if (dailyChart) {
     dailyChart.innerHTML = '';
@@ -8025,25 +8146,199 @@ function renderExpenseAnalytics() {
       if (v > maxV) maxV = v;
     }
     const isCurrCalMonth = (y === today.getFullYear() && m === today.getMonth());
+    const todayD = isCurrCalMonth ? today.getDate() : -1;
+    const dailyAvg = curr.daysActive > 0 ? (curr.total / curr.daysActive) : 0;
+
+    // SVG layout (viewBox is fixed; SVG scales to fill container width).
+    const W = 600, H = 200;
+    const padL = 38, padR = 16, padT = 18, padB = 30;
+    const chartW = W - padL - padR;
+    const chartH = H - padT - padB;
+    const yMax = Math.max(maxV, dailyAvg) * 1.10 || 1;
+
+    const xFor = d => padL + ((days <= 1) ? chartW / 2 : ((d - 1) / (days - 1)) * chartW);
+    const yFor = v => padT + (1 - (v / yMax)) * chartH;
+    const baselineY = padT + chartH;
+
+    // Build point array.
+    const pts = [];
     for (let d = 1; d <= days; d++) {
       const v = curr.byDay.get(d) || 0;
-      const heightPct = maxV > 0 ? (v / maxV * 100) : 0;
-      const bar = document.createElement('div');
-      bar.className = 'exp-an-daily-bar' + (v <= 0 ? ' zero' : '') + (isCurrCalMonth && d === today.getDate() ? ' today' : '');
-      bar.title = (en ? monthsEn[m] : months[m]) + ' ' + d + ': ' + _fmtMoney(v);
-      const fill = document.createElement('div');
-      fill.className = 'exp-an-daily-bar-fill';
-      fill.style.height = (v > 0 ? Math.max(3, heightPct) : 1) + '%';
-      bar.appendChild(fill);
-      // Show a label every 5 days to avoid clutter.
-      if (d === 1 || d % 5 === 0 || d === days) {
-        const lbl = document.createElement('div');
-        lbl.className = 'exp-an-daily-bar-day';
-        lbl.textContent = String(d);
-        bar.appendChild(lbl);
-      }
-      dailyChart.appendChild(bar);
+      pts.push({ x: xFor(d), y: yFor(v), v, d });
     }
+
+    // Catmull-Rom → cubic Bezier for a buttery smooth line.
+    const smoothPath = (points) => {
+      if (!points.length) return '';
+      if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
+      let path = `M ${points[0].x.toFixed(2)},${points[0].y.toFixed(2)}`;
+      for (let i = 0; i < points.length - 1; i++) {
+        const p0 = i > 0 ? points[i - 1] : points[0];
+        const p1 = points[i];
+        const p2 = points[i + 1];
+        const p3 = (i + 2 < points.length) ? points[i + 2] : p2;
+        const cp1x = p1.x + (p2.x - p0.x) / 6;
+        const cp1y = p1.y + (p2.y - p0.y) / 6;
+        const cp2x = p2.x - (p3.x - p1.x) / 6;
+        const cp2y = p2.y - (p3.y - p1.y) / 6;
+        path += ` C ${cp1x.toFixed(2)},${cp1y.toFixed(2)} ${cp2x.toFixed(2)},${cp2y.toFixed(2)} ${p2.x.toFixed(2)},${p2.y.toFixed(2)}`;
+      }
+      return path;
+    };
+    const linePath = smoothPath(pts);
+    const lastX = pts[pts.length - 1].x;
+    const firstX = pts[0].x;
+    const areaPath = linePath
+      ? `${linePath} L ${lastX.toFixed(2)},${baselineY.toFixed(2)} L ${firstX.toFixed(2)},${baselineY.toFixed(2)} Z`
+      : '';
+
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'exp-an-daily-svg');
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', en ? 'Daily expenses chart' : 'দৈনিক খরচের চার্ট');
+
+    // <defs>: gradients used by line + area
+    svg.insertAdjacentHTML('beforeend', `
+      <defs>
+        <linearGradient id="expAnAreaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"  stop-color="#60a5fa" stop-opacity="0.45"/>
+          <stop offset="55%" stop-color="#3b82f6" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="#1e3a8a" stop-opacity="0.02"/>
+        </linearGradient>
+        <linearGradient id="expAnLineGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="#93c5fd"/>
+          <stop offset="55%"  stop-color="#60a5fa"/>
+          <stop offset="100%" stop-color="#3b82f6"/>
+        </linearGradient>
+      </defs>
+    `);
+
+    // ── Y-axis: 0, average, peak grid lines + value labels on the left.
+    const yTickVals = [];
+    yTickVals.push({ v: 0, label: '৳0' });
+    if (dailyAvg > 0) yTickVals.push({ v: dailyAvg, label: _fmtMoney(dailyAvg), isAvg: true });
+    if (maxV > 0)     yTickVals.push({ v: maxV, label: _fmtMoney(maxV) });
+
+    yTickVals.forEach(t => {
+      const yy = yFor(t.v);
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('class', t.isAvg ? 'avg-line' : 'grid-line');
+      line.setAttribute('x1', padL); line.setAttribute('x2', W - padR);
+      line.setAttribute('y1', yy);   line.setAttribute('y2', yy);
+      svg.appendChild(line);
+
+      const lbl = document.createElementNS(ns, 'text');
+      lbl.setAttribute('class', 'axis-label');
+      lbl.setAttribute('x', padL - 6);
+      lbl.setAttribute('y', yy + 3);
+      lbl.setAttribute('text-anchor', 'end');
+      lbl.textContent = t.label;
+      svg.appendChild(lbl);
+    });
+
+    // ── Area fill and smooth line.
+    if (areaPath) {
+      const area = document.createElementNS(ns, 'path');
+      area.setAttribute('class', 'area-path');
+      area.setAttribute('d', areaPath);
+      svg.appendChild(area);
+    }
+    if (linePath) {
+      const line = document.createElementNS(ns, 'path');
+      line.setAttribute('class', 'line-path');
+      line.setAttribute('d', linePath);
+      svg.appendChild(line);
+    }
+
+    // ── Day ticks at 1, 7, 14, 21, 28, last day.
+    const tickDays = Array.from(new Set([1, 7, 14, 21, 28, days])).filter(d => d >= 1 && d <= days).sort((a,b)=>a-b);
+    tickDays.forEach(d => {
+      const xx = xFor(d);
+      const tick = document.createElementNS(ns, 'line');
+      tick.setAttribute('class', 'day-tick');
+      tick.setAttribute('x1', xx); tick.setAttribute('x2', xx);
+      tick.setAttribute('y1', baselineY); tick.setAttribute('y2', baselineY + 4);
+      svg.appendChild(tick);
+
+      const lbl = document.createElementNS(ns, 'text');
+      lbl.setAttribute('class', 'day-label' + (d === todayD ? ' today' : ''));
+      lbl.setAttribute('x', xx);
+      lbl.setAttribute('y', baselineY + 16);
+      lbl.textContent = String(d);
+      svg.appendChild(lbl);
+    });
+
+    // ── Data dots with native tooltips.
+    pts.forEach(p => {
+      const c = document.createElementNS(ns, 'circle');
+      c.setAttribute('class', 'data-dot' + (p.v <= 0 ? ' zero' : ''));
+      c.setAttribute('cx', p.x);
+      c.setAttribute('cy', p.y);
+      c.setAttribute('r', p.v > 0 ? 3 : 1.8);
+      const t = document.createElementNS(ns, 'title');
+      t.textContent = (en ? monthsEn[m] : months[m]) + ' ' + p.d + ' — ' + _fmtMoney(p.v);
+      c.appendChild(t);
+      svg.appendChild(c);
+    });
+
+    // ── Today marker: pulsing ring + dot.
+    if (todayD >= 1 && todayD <= days) {
+      const tp = pts[todayD - 1];
+      const ring = document.createElementNS(ns, 'circle');
+      ring.setAttribute('class', 'today-ring');
+      ring.setAttribute('cx', tp.x);
+      ring.setAttribute('cy', tp.y);
+      ring.setAttribute('r', 7);
+      svg.appendChild(ring);
+
+      const dot = document.createElementNS(ns, 'circle');
+      dot.setAttribute('class', 'today-dot');
+      dot.setAttribute('cx', tp.x);
+      dot.setAttribute('cy', tp.y);
+      dot.setAttribute('r', 3.5);
+      const tt = document.createElementNS(ns, 'title');
+      tt.textContent = (en ? 'Today' : 'আজ') + ' — ' + _fmtMoney(tp.v);
+      dot.appendChild(tt);
+      svg.appendChild(dot);
+    }
+
+    // ── Peak callout above the highest day.
+    if (curr.maxDayVal > 0) {
+      const pk = pts[curr.maxDayNum - 1];
+      const txt = _fmtMoney(curr.maxDayVal);
+      // Estimate text width: ~6.5px per char at 10px font.
+      const w = Math.max(40, txt.length * 6.5 + 12);
+      const h = 18;
+      let cx = pk.x;
+      let cy = pk.y - 14;
+      // Keep callout inside chart area.
+      let bx = cx - w / 2;
+      if (bx < padL) bx = padL;
+      if (bx + w > W - padR) bx = W - padR - w;
+      if (cy - h < 0) cy = pk.y + 22;
+
+      const rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('class', 'peak-callout-bg');
+      rect.setAttribute('x', bx);
+      rect.setAttribute('y', cy - h);
+      rect.setAttribute('width', w);
+      rect.setAttribute('height', h);
+      rect.setAttribute('rx', 9);
+      svg.appendChild(rect);
+
+      const ptxt = document.createElementNS(ns, 'text');
+      ptxt.setAttribute('class', 'peak-callout-text');
+      ptxt.setAttribute('x', bx + w / 2);
+      ptxt.setAttribute('y', cy - 4);
+      ptxt.setAttribute('text-anchor', 'middle');
+      ptxt.textContent = '▲ ' + txt;
+      svg.appendChild(ptxt);
+    }
+
+    dailyChart.appendChild(svg);
 
     // Append a small summary line below.
     const summary = document.createElement('div');
@@ -10983,10 +11278,20 @@ function switchToOrders() {
 if (window.innerWidth >= 1024) {
   document.getElementById('ordersDesktopBtn').style.display = '';
 }
-window.addEventListener('resize', () => {
-  document.getElementById('ordersDesktopBtn').style.display = window.innerWidth >= 1024 ? '' : 'none';
-  updateBazarBanner();
-});
+// rAF-throttled resize so dragging the window edge doesn't flood the layout.
+(function () {
+  let pending = false;
+  function flush() {
+    pending = false;
+    try { document.getElementById('ordersDesktopBtn').style.display = window.innerWidth >= 1024 ? '' : 'none'; } catch(_) {}
+    try { updateBazarBanner(); } catch(_) {}
+  }
+  window.addEventListener('resize', () => {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(flush);
+  }, { passive: true });
+})();
 
 // Load SheetJS library for Excel import
 (function loadSheetJS() {
@@ -11024,8 +11329,19 @@ updateBazarBanner();
 // Keep the bazar pending banner in sync with every viewport / focus change so
 // it never gets stuck "missing" on phones — covers orientation switches,
 // tab returns, foldables, cross-tab edits, and Firebase pushes.
-window.addEventListener('resize', () => { try { updateBazarBanner(); } catch(_) {} });
-window.addEventListener('orientationchange', () => { try { updateBazarBanner(); } catch(_) {} });
+// rAF-throttled bazar-banner refresh on resize / orientation flips so phones
+// don't burn CPU while the keyboard pops in & out.
+(function () {
+  let pending = false;
+  function flush() { pending = false; try { updateBazarBanner(); } catch(_) {} }
+  function schedule() {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(flush);
+  }
+  window.addEventListener('resize', schedule, { passive: true });
+  window.addEventListener('orientationchange', schedule, { passive: true });
+})();
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) { try { updateBazarBanner(); } catch(_) {} }
 });
@@ -11075,66 +11391,120 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
       .catch(() => {});
   });
 }
-// Premium animated background - mouse-reactive glow (GPU-accelerated, smooth on MacBook)
-// Completely stops when orders section is active
+// Premium animated background — mouse-reactive glow.
+// Smoothness rules:
+//  • Pointer-only devices (Mac / PC) get the full mouse-reactive glow but
+//    throttled to ~30fps so the heavy blurred radial-gradient repaint stays cheap.
+//  • Touch devices (phone / tablet) skip the JS loop entirely and rely on the
+//    CSS-only `cosmosDrift` animation so battery & jank stay flat.
+//  • Loop pauses when the tab is hidden, when reduced-motion is requested,
+//    and when the orders section is active.
 (function() {
+  const supportsHover = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const reduceMotion  = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Touch-only or reduced-motion → just paint a static gradient and bail.
+  if (!supportsHover || reduceMotion) {
+    document.body.style.setProperty('--bg-x',  '30%');
+    document.body.style.setProperty('--bg-y',  '30%');
+    document.body.style.setProperty('--bg-x2', '70%');
+    document.body.style.setProperty('--bg-y2', '70%');
+    return;
+  }
+
   let targetX = 30, targetY = 30, currentX = 30, currentY = 30;
   let targetX2 = 70, targetY2 = 70, currentX2 = 70, currentY2 = 70;
-  let animating = false;
+  let lastWriteX = -999, lastWriteY = -999, lastWriteX2 = -999, lastWriteY2 = -999;
+  const FRAME_MS = 33;          // ~30 fps cap — invisible vs 60 but half the paint cost
+  const WRITE_EPS = 0.35;       // skip CSS writes for sub-pixel drift
+  let lastFrame = 0;
+  let scheduled = false;
+  let userActive = false;
+  let userActiveUntil = 0;
 
   function isOrdersActive() { return document.body.classList.contains('orders-active'); }
   function lerp(start, end, factor) { return start + (end - start) * factor; }
 
-  function animate() {
-    if (isOrdersActive()) { animating = false; return; }
-    currentX = lerp(currentX, targetX, 0.04);
-    currentY = lerp(currentY, targetY, 0.04);
-    currentX2 = lerp(currentX2, targetX2, 0.03);
-    currentY2 = lerp(currentY2, targetY2, 0.03);
+  function flushVars() {
+    const dx  = Math.abs(currentX  - lastWriteX);
+    const dy  = Math.abs(currentY  - lastWriteY);
+    const dx2 = Math.abs(currentX2 - lastWriteX2);
+    const dy2 = Math.abs(currentY2 - lastWriteY2);
+    if (dx < WRITE_EPS && dy < WRITE_EPS && dx2 < WRITE_EPS && dy2 < WRITE_EPS) return false;
+    const s = document.body.style;
+    s.setProperty('--bg-x',  currentX.toFixed(2)  + '%');
+    s.setProperty('--bg-y',  currentY.toFixed(2)  + '%');
+    s.setProperty('--bg-x2', currentX2.toFixed(2) + '%');
+    s.setProperty('--bg-y2', currentY2.toFixed(2) + '%');
+    lastWriteX = currentX;  lastWriteY = currentY;
+    lastWriteX2 = currentX2; lastWriteY2 = currentY2;
+    return true;
+  }
 
-    document.body.style.setProperty('--bg-x', currentX + '%');
-    document.body.style.setProperty('--bg-y', currentY + '%');
-    document.body.style.setProperty('--bg-x2', currentX2 + '%');
-    document.body.style.setProperty('--bg-y2', currentY2 + '%');
-
-    if (Math.abs(currentX - targetX) > 0.1 || Math.abs(currentY - targetY) > 0.1) {
-      requestAnimationFrame(animate);
-    } else {
-      animating = false;
+  let autoAngle = 0;
+  function tick(ts) {
+    scheduled = false;
+    if (document.hidden || isOrdersActive()) {
+      // Don't burn CPU when nothing's visible. Resume on visibility/scroll/move.
+      return;
     }
+    if (ts - lastFrame < FRAME_MS) {
+      scheduled = true;
+      requestAnimationFrame(tick);
+      return;
+    }
+    lastFrame = ts;
+
+    if (userActive && ts < userActiveUntil) {
+      // Mouse-driven glow: ease towards pointer.
+      currentX  = lerp(currentX,  targetX,  0.10);
+      currentY  = lerp(currentY,  targetY,  0.10);
+      currentX2 = lerp(currentX2, targetX2, 0.07);
+      currentY2 = lerp(currentY2, targetY2, 0.07);
+    } else {
+      // Idle: gentle ambient drift.
+      userActive = false;
+      autoAngle += 0.015;
+      const ax  = 50 + Math.sin(autoAngle) * 25;
+      const ay  = 50 + Math.cos(autoAngle * 0.7) * 20;
+      const ax2 = 50 - Math.sin(autoAngle * 0.5) * 20;
+      const ay2 = 50 - Math.cos(autoAngle * 0.8) * 15;
+      currentX  = lerp(currentX,  ax,  0.04);
+      currentY  = lerp(currentY,  ay,  0.04);
+      currentX2 = lerp(currentX2, ax2, 0.03);
+      currentY2 = lerp(currentY2, ay2, 0.03);
+    }
+
+    flushVars();
+
+    // Keep ticking while the user is moving or while the idle drift is alive.
+    scheduled = true;
+    requestAnimationFrame(tick);
+  }
+
+  function ensureRunning() {
+    if (scheduled || document.hidden || isOrdersActive()) return;
+    scheduled = true;
+    requestAnimationFrame(tick);
   }
 
   document.addEventListener('mousemove', function(e) {
     if (isOrdersActive()) return;
-    targetX = (e.clientX / window.innerWidth * 100);
-    targetY = (e.clientY / window.innerHeight * 100);
+    targetX = (e.clientX / window.innerWidth) * 100;
+    targetY = (e.clientY / window.innerHeight) * 100;
     targetX2 = 100 - targetX * 0.5;
     targetY2 = 100 - targetY * 0.4;
-    if (!animating) { animating = true; requestAnimationFrame(animate); }
+    userActive = true;
+    userActiveUntil = performance.now() + 1500;
+    ensureRunning();
   }, { passive: true });
 
-  // Auto-animate when no mouse (mobile/touch) - completely stops on orders
-  let autoAngle = 0;
-  function autoFloat() {
-    if (isOrdersActive()) { requestAnimationFrame(autoFloat); return; }
-    if (!animating) {
-      autoAngle += 0.008;
-      targetX = 50 + Math.sin(autoAngle) * 25;
-      targetY = 50 + Math.cos(autoAngle * 0.7) * 20;
-      targetX2 = 50 - Math.sin(autoAngle * 0.5) * 20;
-      targetY2 = 50 - Math.cos(autoAngle * 0.8) * 15;
-      currentX = lerp(currentX, targetX, 0.02);
-      currentY = lerp(currentY, targetY, 0.02);
-      currentX2 = lerp(currentX2, targetX2, 0.015);
-      currentY2 = lerp(currentY2, targetY2, 0.015);
-      document.body.style.setProperty('--bg-x', currentX + '%');
-      document.body.style.setProperty('--bg-y', currentY + '%');
-      document.body.style.setProperty('--bg-x2', currentX2 + '%');
-      document.body.style.setProperty('--bg-y2', currentY2 + '%');
-    }
-    requestAnimationFrame(autoFloat);
-  }
-  requestAnimationFrame(autoFloat);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) ensureRunning();
+  });
+
+  // Kick off the idle drift once.
+  ensureRunning();
 })();
 
 /* Keep `--header-h` in sync with the actual sticky page header height so the
@@ -11154,11 +11524,18 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
     document.fonts.ready.then(updateHeaderH).catch(() => {});
   }
   window.addEventListener('load', updateHeaderH);
-  window.addEventListener('resize', updateHeaderH);
-  window.addEventListener('orientationchange', updateHeaderH);
+  // rAF-throttle resize/orientation so drag-resize doesn't churn layout.
+  let _hPending = false;
+  const _hSchedule = () => {
+    if (_hPending) return;
+    _hPending = true;
+    requestAnimationFrame(() => { _hPending = false; updateHeaderH(); });
+  };
+  window.addEventListener('resize', _hSchedule, { passive: true });
+  window.addEventListener('orientationchange', _hSchedule, { passive: true });
   if (window.ResizeObserver) {
     const hdr = document.querySelector('.header');
-    if (hdr) new ResizeObserver(updateHeaderH).observe(hdr);
+    if (hdr) new ResizeObserver(_hSchedule).observe(hdr);
   }
 })();
 
