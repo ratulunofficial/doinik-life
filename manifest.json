@@ -5,10 +5,11 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "portrait",
   "lang": "bn",
   "dir": "ltr",
-  "background_color": "#060914",
+  "background_color": "#04060f",
   "theme_color": "#060914",
   "categories": ["productivity", "lifestyle", "finance"],
   "icons": [
@@ -29,6 +30,29 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tasks",
+      "short_name": "Tasks",
+      "description": "Open today's tasks",
+      "url": "/?tab=tasks",
+      "icons": [{ "src": "icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Expenses",
+      "short_name": "Expenses",
+      "description": "Track today's expenses",
+      "url": "/?tab=expense",
+      "icons": [{ "src": "icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Bazar",
+      "short_name": "Bazar",
+      "description": "Open shopping list",
+      "url": "/?tab=bazar",
+      "icons": [{ "src": "icon.png", "sizes": "192x192" }]
     }
   ]
 }
