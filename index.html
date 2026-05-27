@@ -14,8 +14,11 @@
 <title>Doinik Life</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='512' height='512' viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23131a2c'/%3E%3Cstop offset='100%25' stop-color='%23070a18'/%3E%3C/linearGradient%3E%3ClinearGradient id='bl' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%235b9bff'/%3E%3Cstop offset='100%25' stop-color='%233b6df0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='108' fill='url(%23bg)'/%3E%3Crect x='126' y='140' width='260' height='72' rx='26' fill='url(%23bl)'/%3E%3Crect x='126' y='186' width='260' height='26' fill='url(%23bl)'/%3E%3Ctext x='256' y='190' font-family='Arial' font-size='38' font-weight='800' fill='white' text-anchor='middle'%3EDL%3C/text%3E%3Ccircle cx='176' cy='258' r='15' stroke='%235b9bff' stroke-width='2.5' fill='none'/%3E%3Ccircle cx='176' cy='314' r='15' stroke='%235b9bff' stroke-width='2.5' fill='none'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&family=Cormorant+Garamond:wght@500;600;700&family=Hind+Siliguri:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
+  /* Premium type stack — slim. Inter for Latin, Hind Siliguri for Bengali. */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -3042,7 +3045,6 @@
 
     .auth-box::after, .auth-btn::after, .btn-primary::after,
     .bottom-nav .nav-item.active::before { filter: none; }
-  }
 
   /* ════════════════════════════════════════════════════════════════
      LUXURY UI LAYER — gold accents, serif typography, premium glass.
@@ -4140,6 +4142,951 @@
      <meta viewport> (`maximum-scale=1.0, user-scalable=no`), so we do
      NOT need a global 16px override here — that would break smaller
      inputs (e.g. the orders search bar). */
+
+  /* ════════════════════════════════════════════════════════════════════
+     ✦ PREMIUM POLISH LAYER ✦
+     Appended last to win the cascade. Refines tokens, typography, depth,
+     motion, and mobile perf without touching JS or DOM structure.
+     Inspired by: Linear · Notion · Apple · Arc · iOS · premium SaaS.
+     ════════════════════════════════════════════════════════════════════ */
+
+  /* — Refined design tokens (overrides earlier root) — */
+  :root {
+    /* Refined surface ladder — subtle frosted depth, not flat slabs */
+    --pp-surface-1: rgba(15, 22, 38, 0.74);
+    --pp-surface-2: rgba(20, 28, 48, 0.62);
+    --pp-surface-3: rgba(30, 42, 68, 0.50);
+    --pp-surface-solid: #0e1424;
+
+    /* Hairlines — modern Linear-style 1px strokes */
+    --pp-stroke: rgba(140, 170, 220, 0.10);
+    --pp-stroke-soft: rgba(140, 170, 220, 0.07);
+    --pp-stroke-strong: rgba(140, 170, 220, 0.18);
+    --pp-stroke-accent: rgba(96, 165, 250, 0.32);
+
+    /* Text contrast pyramid */
+    --pp-text-strong: #f4f7ff;
+    --pp-text: #e3e9f6;
+    --pp-text-mid: #b6bfd6;
+    --pp-text-soft: #828aa3;
+    --pp-text-faint: #5a6280;
+
+    /* Refined accent — brighter & cleaner cobalt */
+    --pp-accent: #5b9bff;
+    --pp-accent-2: #93c5fd;
+    --pp-accent-deep: #2563eb;
+    --pp-accent-rgb: 96, 165, 250;
+
+    /* Cohesive shadow stack (premium SaaS depth) */
+    --pp-sh-1: 0 1px 2px rgba(4, 8, 22, 0.30);
+    --pp-sh-2: 0 2px 8px rgba(4, 8, 22, 0.32), 0 1px 2px rgba(4, 8, 22, 0.20);
+    --pp-sh-3: 0 8px 22px -8px rgba(4, 8, 22, 0.55), 0 2px 6px rgba(4, 8, 22, 0.30);
+    --pp-sh-4: 0 18px 44px -14px rgba(4, 8, 22, 0.65), 0 4px 12px rgba(4, 8, 22, 0.30);
+    --pp-sh-5: 0 30px 64px -18px rgba(4, 8, 22, 0.72), 0 8px 22px rgba(4, 8, 22, 0.38);
+    --pp-sh-glow: 0 0 0 1px rgba(96, 165, 250, 0.30), 0 8px 28px -6px rgba(59, 130, 246, 0.40);
+
+    /* Refined easings */
+    --pp-ease: cubic-bezier(.22, .61, .36, 1);
+    --pp-snap: cubic-bezier(.16, 1, .3, 1);
+    --pp-emph: cubic-bezier(.32, .72, 0, 1);
+
+    /* Type scale */
+    --pp-fs-2xs: 10.5px;
+    --pp-fs-xs:  11.5px;
+    --pp-fs-sm:  13px;
+    --pp-fs-base: 14.5px;
+    --pp-fs-md:  15.5px;
+    --pp-fs-lg:  17px;
+    --pp-fs-xl:  20px;
+    --pp-fs-2xl: 24px;
+    --pp-fs-3xl: 30px;
+
+    /* Spacing scale */
+    --pp-sp-1: 4px;
+    --pp-sp-2: 8px;
+    --pp-sp-3: 12px;
+    --pp-sp-4: 16px;
+    --pp-sp-5: 20px;
+    --pp-sp-6: 24px;
+    --pp-sp-8: 32px;
+    --pp-sp-10: 40px;
+
+    /* Radii */
+    --pp-r-xs: 6px;
+    --pp-r-sm: 10px;
+    --pp-r-md: 14px;
+    --pp-r-lg: 18px;
+    --pp-r-xl: 22px;
+    --pp-r-pill: 999px;
+  }
+
+  /* — Body smoothing & font features — */
+  body {
+    font-family: 'Inter', 'Hind Siliguri', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.005em;
+    color: var(--pp-text);
+  }
+  h1, h2, h3, h4 { letter-spacing: -0.02em; }
+
+  /* — Modern numeric tabular alignment for amounts/stats — */
+  .stat-val, .qs-val, .big-num, .monthly-amount,
+  .exp-an-total-amt, .exp-an-stat-val, .bazar-stat-val,
+  .orders-stat-val, .loan-item-amt, .total-bar span:last-child,
+  .exp-item, .day-total {
+    font-feature-settings: 'tnum' 1, 'lnum' 1;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     ✦ KILL the heavy "Universal Blue Glow" — replace with refined depth ✦
+     ──────────────────────────────────────────────────────────────────── */
+
+  /* Cards: clean, frosted, single-stroke, gentle lift on hover */
+  .card {
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.00)),
+      var(--pp-surface-1) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    border-radius: var(--pp-r-lg) !important;
+    box-shadow: var(--pp-sh-3) !important;
+    backdrop-filter: blur(14px) saturate(135%);
+    -webkit-backdrop-filter: blur(14px) saturate(135%);
+    transition:
+      transform .35s var(--pp-snap),
+      border-color .25s var(--pp-ease),
+      box-shadow .35s var(--pp-ease) !important;
+    /* Disable the cardIn :nth-of-type stagger that was causing first-paint jank */
+    animation: none !important;
+  }
+  /* Crisp top edge — single hair-line highlight (Apple style) */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0) 30%);
+    mix-blend-mode: overlay;
+    opacity: 0.7;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover {
+      border-color: var(--pp-stroke-strong) !important;
+      box-shadow: var(--pp-sh-4) !important;
+      transform: translateY(-1px) !important;
+    }
+  }
+
+  /* Section labels — clean small-caps, no stray border/glow */
+  .sec-label {
+    font-size: var(--pp-fs-2xs) !important;
+    font-weight: 700 !important;
+    color: var(--pp-text-soft) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.12em !important;
+    margin-bottom: 14px;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     HEADER — refined sticky bar, native iOS feel
+     ──────────────────────────────────────────────────────────────────── */
+  .header {
+    background: rgba(8, 12, 24, 0.78) !important;
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-bottom: 1px solid var(--pp-stroke) !important;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 12px 24px -16px rgba(0,0,0,0.50);
+  }
+  .header-title {
+    font-size: var(--pp-fs-md) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.015em !important;
+  }
+  .header-title span {
+    background: linear-gradient(135deg, #93c5fd, #5b9bff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+  }
+  .header-date {
+    font-weight: 500 !important;
+    color: var(--pp-text-soft) !important;
+  }
+
+  .sync-btn {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    color: var(--pp-text-mid) !important;
+    border-radius: var(--pp-r-pill) !important;
+    transition: background .2s var(--pp-ease), border-color .2s var(--pp-ease), transform .15s var(--pp-snap) !important;
+  }
+  .sync-btn:hover {
+    background: rgba(255,255,255,0.07) !important;
+    border-color: var(--pp-stroke-strong) !important;
+  }
+  .sync-btn:active { transform: scale(0.96); }
+
+  .logout-btn {
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    color: var(--pp-text-soft) !important;
+    border-radius: var(--pp-r-pill) !important;
+    transition: background .2s var(--pp-ease), color .2s var(--pp-ease), transform .15s var(--pp-snap) !important;
+  }
+  .logout-btn:hover {
+    background: rgba(248, 113, 113, 0.08) !important;
+    color: #fca5a5 !important;
+    border-color: rgba(248, 113, 113, 0.22) !important;
+  }
+  .logout-btn:active { transform: scale(0.96); }
+
+  /* ────────────────────────────────────────────────────────────────────
+     BOTTOM NAV — Apple/Arc-style with sliding pill indicator
+     ──────────────────────────────────────────────────────────────────── */
+  .bottom-nav {
+    background: rgba(8, 12, 24, 0.85) !important;
+    backdrop-filter: blur(22px) saturate(170%);
+    -webkit-backdrop-filter: blur(22px) saturate(170%);
+    border-top: 1px solid var(--pp-stroke) !important;
+    box-shadow: 0 -1px 0 rgba(255,255,255,0.02) inset, 0 -8px 32px -12px rgba(0,0,0,0.45);
+    padding-top: 8px !important;
+  }
+  .nav-item {
+    position: relative;
+    color: var(--pp-text-soft) !important;
+    font-weight: 600 !important;
+    font-size: 10px !important;
+    transition: color .25s var(--pp-ease), transform .15s var(--pp-snap) !important;
+    z-index: 1;
+  }
+  .nav-item .nav-icon {
+    transition: transform .35s var(--pp-snap), filter .25s var(--pp-ease) !important;
+  }
+  /* The capsule that pulses behind the active item */
+  .nav-item::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    width: 44px;
+    height: 30px;
+    border-radius: var(--pp-r-pill);
+    background: linear-gradient(180deg,
+      rgba(96, 165, 250, 0.18),
+      rgba(59, 130, 246, 0.10));
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    transform: translateX(-50%) scale(0.85);
+    opacity: 0;
+    transition:
+      opacity .28s var(--pp-ease),
+      transform .35s var(--pp-snap),
+      background .25s var(--pp-ease);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .nav-item.active::before {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  .nav-item.active {
+    color: var(--pp-accent-2) !important;
+  }
+  .nav-item.active .nav-icon {
+    transform: translateY(-1px) scale(1.08);
+    filter: drop-shadow(0 4px 8px rgba(96, 165, 250, 0.40)) !important;
+  }
+  .nav-item:active { transform: scale(0.94); }
+  /* Override the loud globals that earlier rules inject */
+  .bottom-nav .nav-item.active {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     QUICK STATS / STAT CARDS — refined kerning, soft frosted slabs
+     ──────────────────────────────────────────────────────────────────── */
+  .quick-stats { gap: 10px; }
+  .qs-card, .stat-card {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
+      var(--pp-surface-2) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    border-radius: var(--pp-r-md) !important;
+    padding: 14px 14px !important;
+    transition: border-color .25s var(--pp-ease), transform .25s var(--pp-snap), box-shadow .25s var(--pp-ease);
+  }
+  .qs-card:hover, .stat-card:hover {
+    border-color: var(--pp-stroke-strong) !important;
+    transform: translateY(-1px);
+    box-shadow: var(--pp-sh-2);
+  }
+  .qs-val, .stat-val {
+    color: var(--pp-text-strong) !important;
+    letter-spacing: -0.022em !important;
+    line-height: 1.1 !important;
+  }
+  .qs-lbl, .stat-lbl {
+    color: var(--pp-text-faint) !important;
+    font-weight: 500 !important;
+    margin-top: 4px !important;
+    letter-spacing: 0.01em;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     CALENDAR — cleaner today/selected, tighter rhythm
+     ──────────────────────────────────────────────────────────────────── */
+  .cal-nav {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    border-radius: var(--pp-r-sm) !important;
+    color: var(--pp-text-mid) !important;
+    transition: background .2s var(--pp-ease), border-color .2s var(--pp-ease), transform .12s var(--pp-snap) !important;
+  }
+  .cal-nav:hover {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: var(--pp-stroke-strong) !important;
+  }
+  .cal-nav:active { transform: scale(0.92); }
+
+  .cal-day {
+    font-weight: 500 !important;
+    color: var(--pp-text-mid) !important;
+    border-radius: var(--pp-r-sm) !important;
+    transition:
+      background .2s var(--pp-ease),
+      color .2s var(--pp-ease),
+      transform .2s var(--pp-snap),
+      box-shadow .25s var(--pp-ease) !important;
+  }
+  .cal-day:hover {
+    background: rgba(96, 165, 250, 0.10) !important;
+    color: var(--pp-text-strong) !important;
+    transform: scale(1.04);
+    box-shadow: none !important;
+  }
+  .cal-day.today {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.10) inset,
+      0 6px 16px -4px rgba(59, 130, 246, 0.55) !important;
+    text-shadow: none !important;
+  }
+  .cal-day.today.selected, .cal-day.selected {
+    box-shadow:
+      0 0 0 1px rgba(96, 165, 250, 0.45),
+      0 6px 16px -4px rgba(59, 130, 246, 0.40) !important;
+  }
+  .cal-day.has-data::after { background: var(--pp-accent-2) !important; }
+  .cal-day-name {
+    color: var(--pp-text-faint) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     TASKS — softer dividers, refined checkbox feel
+     ──────────────────────────────────────────────────────────────────── */
+  .task-row {
+    border-bottom: 1px solid var(--pp-stroke-soft) !important;
+    padding: 12px 0 !important;
+    transition: opacity .2s, background .2s var(--pp-ease) !important;
+    border-radius: 6px;
+    margin: 0 -6px;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+  .task-row:last-child { border-bottom: none !important; }
+  @media (hover: hover) {
+    .task-row:hover { background: rgba(255,255,255,0.02); }
+  }
+  .task-cb {
+    border-color: var(--pp-stroke-strong) !important;
+    border-width: 1.5px !important;
+    border-radius: 7px !important;
+    transition:
+      background .2s var(--pp-ease),
+      border-color .2s var(--pp-ease),
+      box-shadow .25s var(--pp-ease),
+      transform .12s var(--pp-snap) !important;
+    box-shadow: none !important;
+  }
+  .task-cb:hover { border-color: var(--pp-accent-2) !important; }
+  .task-cb:active { transform: scale(0.92); }
+  .task-cb.done {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    border-color: #3b82f6 !important;
+    box-shadow:
+      0 0 0 1px rgba(96, 165, 250, 0.35),
+      0 4px 10px -2px rgba(59, 130, 246, 0.45) !important;
+  }
+  .task-text {
+    font-weight: 500 !important;
+    color: var(--pp-text) !important;
+    line-height: 1.45;
+  }
+  .task-text.done { color: var(--pp-text-faint) !important; }
+
+  /* ────────────────────────────────────────────────────────────────────
+     PROGRESS BARS — smoother, no jittery shimmer loop on mobile
+     ──────────────────────────────────────────────────────────────────── */
+  .prog-wrap {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--pp-stroke-soft) !important;
+    border-radius: var(--pp-r-pill) !important;
+    height: 6px !important;
+    overflow: hidden;
+  }
+  .prog-fill {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa, #93c5fd) !important;
+    background-size: 200% 100% !important;
+    box-shadow:
+      0 0 0 1px rgba(96, 165, 250, 0.20) inset,
+      0 0 8px rgba(59, 130, 246, 0.40) !important;
+    animation: ppShimmer 4s linear infinite;
+  }
+  @keyframes ppShimmer {
+    0% { background-position: 0% 0; }
+    100% { background-position: -200% 0; }
+  }
+  /* Disable expensive shimmer on mobile to save battery */
+  @media (max-width: 600px) {
+    .prog-fill { animation: none !important; background-size: 100% 100% !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .prog-fill { animation: none !important; }
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     INPUTS / SELECTS / TEXTAREAS — refined Notion-style fields
+     ──────────────────────────────────────────────────────────────────── */
+  input, select, textarea {
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    border-radius: var(--pp-r-sm) !important;
+    color: var(--pp-text) !important;
+    box-shadow: none !important;
+    transition:
+      border-color .2s var(--pp-ease),
+      background .2s var(--pp-ease),
+      box-shadow .25s var(--pp-ease),
+      color .2s var(--pp-ease) !important;
+  }
+  input::placeholder, textarea::placeholder { color: var(--pp-text-faint) !important; }
+  input:hover, select:hover, textarea:hover { border-color: var(--pp-stroke-strong) !important; }
+  input:focus, select:focus, textarea:focus {
+    outline: none !important;
+    border-color: var(--pp-accent) !important;
+    background: rgba(255,255,255,0.05) !important;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.18) !important;
+  }
+
+  /* Number spinner cleanup on Webkit / Firefox */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number] { -moz-appearance: textfield; }
+
+  /* ────────────────────────────────────────────────────────────────────
+     BUTTONS — refined primary, tactile press
+     ──────────────────────────────────────────────────────────────────── */
+  .btn-primary, .auth-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.10) inset,
+      0 1px 0 rgba(255,255,255,0.18) inset,
+      0 8px 22px -4px rgba(59, 130, 246, 0.45) !important;
+    transition:
+      transform .14s var(--pp-snap),
+      filter .2s var(--pp-ease),
+      box-shadow .25s var(--pp-ease) !important;
+    letter-spacing: 0.005em;
+  }
+  .btn-primary:hover, .auth-btn:hover {
+    filter: brightness(1.06);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.14) inset,
+      0 1px 0 rgba(255,255,255,0.22) inset,
+      0 12px 30px -6px rgba(59, 130, 246, 0.55) !important;
+  }
+  .btn-primary:active, .auth-btn:active {
+    transform: translateY(1px) scale(0.98);
+    filter: brightness(0.96);
+  }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    color: var(--pp-text-mid) !important;
+    transition: background .2s var(--pp-ease), border-color .2s var(--pp-ease), transform .12s var(--pp-snap) !important;
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.07) !important;
+    border-color: var(--pp-stroke-strong) !important;
+  }
+  .btn-secondary:active { transform: scale(0.98); }
+
+  /* ────────────────────────────────────────────────────────────────────
+     MODALS — premium glass + smoother entrance
+     ──────────────────────────────────────────────────────────────────── */
+  .modal-overlay {
+    background: rgba(4, 8, 22, 0.62) !important;
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+  }
+  .modal {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)),
+      var(--pp-surface-solid) !important;
+    border: 1px solid var(--pp-stroke-strong) !important;
+    border-radius: var(--pp-r-xl) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04) inset,
+      0 1px 0 rgba(255,255,255,0.05) inset,
+      var(--pp-sh-5) !important;
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    animation: ppModalIn .35s var(--pp-snap) !important;
+  }
+  @keyframes ppModalIn {
+    from { opacity: 0; transform: translateY(12px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) { .modal { animation: none !important; } }
+  .modal h2 {
+    color: var(--pp-text-strong) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+  }
+  .modal p { color: var(--pp-text-soft) !important; }
+  .modal label {
+    color: var(--pp-text-soft) !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     AUTH OVERLAY — premium hero login
+     ──────────────────────────────────────────────────────────────────── */
+  .auth-overlay {
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(59, 130, 246, 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(30, 58, 138, 0.32) 0%, transparent 65%),
+      #04060f !important;
+  }
+  .auth-box {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0)),
+      var(--pp-surface-solid) !important;
+    border: 1px solid var(--pp-stroke-strong) !important;
+    border-radius: var(--pp-r-xl) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04) inset,
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      var(--pp-sh-5) !important;
+    padding: 36px 32px !important;
+  }
+  .auth-box .auth-logo {
+    margin-bottom: 18px !important;
+    filter: drop-shadow(0 8px 20px rgba(59, 130, 246, 0.35));
+  }
+  .auth-box h2 {
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: var(--pp-text-strong) !important;
+    letter-spacing: -0.025em !important;
+    margin-bottom: 8px !important;
+  }
+  .auth-box .auth-subtitle {
+    font-size: 13.5px !important;
+    color: var(--pp-text-soft) !important;
+    line-height: 1.55 !important;
+    margin-bottom: 24px !important;
+  }
+  .auth-box label {
+    color: var(--pp-text-soft) !important;
+    letter-spacing: 0.06em;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     TOAST — refined glass pill
+     ──────────────────────────────────────────────────────────────────── */
+  .toast {
+    background: rgba(20, 28, 48, 0.92) !important;
+    border: 1px solid var(--pp-stroke-strong) !important;
+    border-radius: var(--pp-r-pill) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.03) inset,
+      var(--pp-sh-4) !important;
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    color: var(--pp-text) !important;
+    font-weight: 500 !important;
+    padding: 12px 22px !important;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     BAZAR / ORDERS HEROES — cleaner gradient surfaces
+     ──────────────────────────────────────────────────────────────────── */
+  .bazar-hero, .orders-hero {
+    background:
+      linear-gradient(135deg, rgba(59, 130, 246, 0.16), rgba(30, 58, 138, 0.10) 60%, rgba(59, 130, 246, 0.04) 100%) !important;
+    border: 1px solid var(--pp-stroke-accent) !important;
+    border-radius: var(--pp-r-lg) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.03) inset,
+      var(--pp-sh-3) !important;
+  }
+  .bazar-hero-icon, .orders-hero-icon {
+    background: linear-gradient(135deg, #3b82f6, #1e40af) !important;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.10) inset,
+      0 4px 14px rgba(59, 130, 246, 0.40);
+  }
+  .bazar-stat, .orders-stat {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--pp-stroke-soft) !important;
+    border-radius: var(--pp-r-sm) !important;
+  }
+  .bazar-progress-circle .fg-ring,
+  .orders-progress-circle .fg-ring {
+    transition: stroke-dasharray .6s var(--pp-snap);
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     BAZAR ITEM ROWS — softer cards
+     ──────────────────────────────────────────────────────────────────── */
+  .bazar-item {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
+      rgba(255,255,255,0.025) !important;
+    border: 1px solid var(--pp-stroke-soft) !important;
+    border-radius: var(--pp-r-md) !important;
+    transition:
+      border-color .2s var(--pp-ease),
+      background .2s var(--pp-ease),
+      transform .15s var(--pp-snap) !important;
+  }
+  @media (hover: hover) {
+    .bazar-item:hover {
+      border-color: var(--pp-stroke-strong) !important;
+      background: rgba(255,255,255,0.04) !important;
+    }
+  }
+  .bazar-cb {
+    border-color: var(--pp-stroke-strong) !important;
+    transition: background .2s var(--pp-ease), border-color .2s var(--pp-ease), transform .12s var(--pp-snap) !important;
+  }
+  .bazar-cb:active { transform: scale(0.92); }
+  .bazar-filter-chip {
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    color: var(--pp-text-mid) !important;
+    border-radius: var(--pp-r-pill) !important;
+    transition: background .2s var(--pp-ease), border-color .2s var(--pp-ease), color .2s var(--pp-ease), transform .12s var(--pp-snap) !important;
+  }
+  .bazar-filter-chip:hover {
+    background: rgba(255,255,255,0.06) !important;
+    color: var(--pp-text-strong) !important;
+  }
+  .bazar-filter-chip.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(59, 130, 246, 0.10)) !important;
+    border-color: rgba(96, 165, 250, 0.40) !important;
+    color: var(--pp-accent-2) !important;
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.20), 0 4px 12px -4px rgba(59, 130, 246, 0.30) !important;
+  }
+  .bazar-filter-chip:active { transform: scale(0.96); }
+
+  /* ────────────────────────────────────────────────────────────────────
+     MOOD BUTTONS — refined selected state
+     ──────────────────────────────────────────────────────────────────── */
+  .mood-btn {
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    border-radius: var(--pp-r-sm) !important;
+    transition:
+      background .25s var(--pp-ease),
+      border-color .25s var(--pp-ease),
+      transform .25s var(--pp-snap),
+      box-shadow .3s var(--pp-ease) !important;
+  }
+  .mood-btn:hover {
+    background: rgba(255,255,255,0.06) !important;
+    border-color: var(--pp-stroke-strong) !important;
+    transform: translateY(-1px);
+  }
+  .mood-btn.selected {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.20), rgba(59, 130, 246, 0.08)) !important;
+    border-color: rgba(96, 165, 250, 0.45) !important;
+    box-shadow:
+      0 0 0 1px rgba(96, 165, 250, 0.30),
+      0 6px 16px -4px rgba(59, 130, 246, 0.30) !important;
+  }
+  .mood-btn:active { transform: scale(0.92); }
+
+  /* ────────────────────────────────────────────────────────────────────
+     LOAN TABS — clean segmented control feel
+     ──────────────────────────────────────────────────────────────────── */
+  .loan-tab {
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    border-radius: var(--pp-r-sm) !important;
+    color: var(--pp-text-mid) !important;
+    transition: background .2s var(--pp-ease), border-color .2s var(--pp-ease), color .2s var(--pp-ease) !important;
+  }
+  .loan-tab:hover { background: rgba(255,255,255,0.06) !important; }
+  .loan-tab.active-gave, .loan-tab.active-took {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0.06)) !important;
+    border-color: rgba(96, 165, 250, 0.35) !important;
+    color: var(--pp-accent-2) !important;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     PERMANENT CHIP & ANALYTICS BUTTONS
+     ──────────────────────────────────────────────────────────────────── */
+  .perm-chip-btn {
+    background: rgba(96, 165, 250, 0.08) !important;
+    border: 1px solid rgba(96, 165, 250, 0.28) !important;
+    color: var(--pp-accent-2) !important;
+    transition: background .2s var(--pp-ease), border-color .2s var(--pp-ease), transform .12s var(--pp-snap) !important;
+  }
+  .perm-chip-btn:hover {
+    background: rgba(96, 165, 250, 0.16) !important;
+    border-color: rgba(96, 165, 250, 0.45) !important;
+  }
+  .perm-chip-btn:active { transform: scale(0.96); }
+
+  .exp-analytics-btn {
+    background: rgba(96, 165, 250, 0.10) !important;
+    border: 1px solid rgba(96, 165, 250, 0.32) !important;
+    color: var(--pp-accent-2) !important;
+    transition: background .2s var(--pp-ease), border-color .2s var(--pp-ease), transform .15s var(--pp-snap) !important;
+  }
+  .exp-analytics-btn:hover {
+    background: rgba(96, 165, 250, 0.20) !important;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.16) !important;
+  }
+  .exp-analytics-btn:active { transform: scale(0.92); }
+
+  /* ────────────────────────────────────────────────────────────────────
+     MONTHLY TOTAL BAR & TOTAL BAR — refined
+     ──────────────────────────────────────────────────────────────────── */
+  .monthly-total-bar {
+    background:
+      linear-gradient(135deg, rgba(96, 165, 250, 0.10), rgba(59, 130, 246, 0.04)) !important;
+    border: 1px solid rgba(96, 165, 250, 0.18) !important;
+    border-radius: var(--pp-r-sm) !important;
+    padding: 10px 14px !important;
+  }
+  .monthly-amount {
+    color: var(--pp-accent-2) !important;
+    letter-spacing: -0.025em !important;
+    font-weight: 700 !important;
+  }
+  .total-bar { border-top: 1px solid var(--pp-stroke) !important; }
+
+  /* ────────────────────────────────────────────────────────────────────
+     ORDERS TABLE — refined header & rows
+     ──────────────────────────────────────────────────────────────────── */
+  .orders-table thead {
+    background: rgba(255,255,255,0.025) !important;
+  }
+  .orders-table th {
+    color: var(--pp-text-soft) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.04em !important;
+    border-bottom: 1px solid var(--pp-stroke) !important;
+  }
+  .orders-table td {
+    border-bottom: 1px solid var(--pp-stroke-soft) !important;
+  }
+  .orders-table tbody tr:hover {
+    background: rgba(96, 165, 250, 0.04) !important;
+  }
+  .btn-orders {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--pp-stroke) !important;
+    color: var(--pp-text-mid) !important;
+    border-radius: var(--pp-r-sm) !important;
+    transition: background .2s var(--pp-ease), border-color .2s var(--pp-ease), transform .12s var(--pp-snap) !important;
+  }
+  .btn-orders:hover {
+    background: rgba(255,255,255,0.07) !important;
+    border-color: var(--pp-stroke-strong) !important;
+  }
+  .btn-orders.primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+    border: 1px solid rgba(96, 165, 250, 0.35) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 16px -4px rgba(59, 130, 246, 0.40);
+  }
+  .btn-orders:active { transform: scale(0.97); }
+
+  /* ────────────────────────────────────────────────────────────────────
+     SCROLLBAR — refined slim accent
+     ──────────────────────────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 8px !important; height: 8px !important; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(96, 165, 250, 0.28) !important;
+    border-radius: 8px !important;
+    border: 2px solid transparent !important;
+    background-clip: padding-box !important;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(96, 165, 250, 0.50) !important;
+    background-clip: padding-box !important;
+  }
+  * { scrollbar-color: rgba(96, 165, 250, 0.28) transparent; }
+
+  /* ────────────────────────────────────────────────────────────────────
+     SELECTION
+     ──────────────────────────────────────────────────────────────────── */
+  ::selection { background: rgba(96, 165, 250, 0.40); color: #fff; }
+
+  /* ────────────────────────────────────────────────────────────────────
+     PERFORMANCE: kill heavy continuous animations on mobile,
+     simplify the background, drop expensive blur layers.
+     ──────────────────────────────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    /* Remove animated background grid + 2 of 3 orbs (keep orb-1 only as a static hint) */
+    .bg-grid { display: none !important; }
+    .bg-orb-2, .bg-orb-3 { display: none !important; }
+    .bg-orb-1 {
+      width: 320px !important;
+      height: 320px !important;
+      filter: blur(80px) !important;
+      animation-duration: 60s !important;
+    }
+    /* Stop the cosmic gradient drift; static gradient is enough */
+    body::after { animation: none !important; }
+    /* Cards drop backdrop-filter on mobile (it's a paint-killer on iOS) */
+    .card {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      background: var(--pp-surface-solid) !important;
+    }
+    /* Modals likewise lighten blur on phones */
+    .modal {
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+    }
+    /* Reduce shimmer / heartbeat on phones */
+    .sync-dot.online { animation: none !important; }
+  }
+
+  /* Honor reduced motion on the polish-layer additions too */
+  @media (prefers-reduced-motion: reduce) {
+    .bg-orb { animation: none !important; }
+    .nav-item::before { transition: opacity .01ms !important; }
+    .card { transition: none !important; }
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     ACCESSIBILITY: clearer focus rings for keyboard users
+     ──────────────────────────────────────────────────────────────────── */
+  @media (hover: hover) and (pointer: fine) {
+    button:focus-visible, a:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible {
+      outline: 2px solid rgba(96, 165, 250, 0.65) !important;
+      outline-offset: 2px !important;
+      border-radius: 6px;
+    }
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     LANG TOGGLE — small refinement
+     ──────────────────────────────────────────────────────────────────── */
+  .lang-toggle-btn {
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     BAZAR PENDING BANNER — refined glass strip
+     ──────────────────────────────────────────────────────────────────── */
+  #bazarPendingBanner {
+    background:
+      linear-gradient(135deg, rgba(251, 191, 36, 0.10), rgba(251, 191, 36, 0.02)) !important;
+    border-bottom: 1px solid rgba(251, 191, 36, 0.18) !important;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     EXP ITEM ROWS — clean dividers
+     ──────────────────────────────────────────────────────────────────── */
+  .exp-item {
+    border-bottom: 1px solid var(--pp-stroke-soft) !important;
+    padding: 10px 0 !important;
+  }
+  .exp-item:last-child { border-bottom: none !important; }
+
+  /* ────────────────────────────────────────────────────────────────────
+     LOAN ITEMS — softer separator + refined buttons
+     ──────────────────────────────────────────────────────────────────── */
+  .loan-item { border-bottom: 1px solid var(--pp-stroke-soft) !important; }
+  .loan-item:last-child { border-bottom: none !important; }
+  .loan-total-row { border-top: 1px solid var(--pp-stroke) !important; }
+
+  /* ────────────────────────────────────────────────────────────────────
+     SYNC DOT — refined heartbeat (no scaling — gentler)
+     ──────────────────────────────────────────────────────────────────── */
+  .sync-dot.online {
+    background: var(--pp-accent) !important;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.18), 0 0 8px rgba(96, 165, 250, 0.55) !important;
+    animation: ppDotPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes ppDotPulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.18), 0 0 8px rgba(96, 165, 250, 0.55); }
+    50%      { box-shadow: 0 0 0 5px rgba(96, 165, 250, 0.10), 0 0 14px rgba(96, 165, 250, 0.85); }
+  }
+  @media (max-width: 600px), (prefers-reduced-motion: reduce) {
+    .sync-dot.online { animation: none !important; }
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     ✨ Final premium touches: kill text-shadow noise across body
+     ──────────────────────────────────────────────────────────────────── */
+  .qs-val, .stat-val, .big-num, .monthly-amount,
+  .bazar-stat-val, .orders-stat-val, .exp-an-stat-val,
+  .total, .total-amt, .net-pos, .summary-num, .stat-num,
+  .amount-big, .amount-large, .loan-item-amt {
+    text-shadow: none !important;
+  }
+  /* Brand and headings keep a very subtle, single-layer glow only */
+  h1, h2, h3, h4, .header-title, .brand, .brand-title {
+    text-shadow: none !important;
+  }
+  .header-title span {
+    /* The gradient already provides the highlight */
+    text-shadow: 0 0 14px rgba(96, 165, 250, 0.18);
+  }
+
+  /* ────────────────────────────────────────────────────────────────────
+     ✨ Page entrance — single, lightweight fade for the main wrapper
+     (replaces the per-card stagger that caused multi-paint jank)
+     ──────────────────────────────────────────────────────────────────── */
+  @keyframes ppPageIn {
+    from { opacity: 0; transform: translate3d(0, 6px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .main {
+    animation: ppPageIn .55s var(--pp-snap) both;
+  }
+  @media (prefers-reduced-motion: reduce) { .main { animation: none !important; } }
+
+  /* ────────────────────────────────────────────────────────────────────
+     END OF PREMIUM POLISH LAYER
+     ──────────────────────────────────────────────────────────────────── */
 </style>
 </head>
 <body>

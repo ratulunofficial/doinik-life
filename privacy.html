@@ -13,39 +13,86 @@
 <link rel="manifest" href="manifest.json" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" />
 <style>
   *, *::before, *::after { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
-  body {
-    font-family: 'Hind Siliguri', 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
-    color: #eef2fb;
-    background: linear-gradient(165deg,#060a1c 0%,#0a1638 22%,#112858 45%,#173b85 60%,#0d2050 78%,#060a1c 100%);
-    background-attachment: fixed; min-height: 100vh;
-    line-height: 1.65; -webkit-font-smoothing: antialiased;
+  :root {
+    --stroke: rgba(140, 170, 220, 0.10);
+    --stroke-strong: rgba(140, 170, 220, 0.18);
+    --text-strong: #f4f7ff;
+    --text: #e3e9f6;
+    --text-mid: #b6bfd6;
+    --text-soft: #828aa3;
+    --accent: #5b9bff;
+    --accent-2: #93c5fd;
+    --ease: cubic-bezier(.22, .61, .36, 1);
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 96px; }
-  .top { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; font-weight: 700; font-size: 18px; text-decoration: none; color: #eef2fb; }
-  .top svg { width: 28px; height: 28px; }
-  h1 { font-size: clamp(28px, 4vw, 38px); margin: 0 0 8px; letter-spacing: -0.02em; }
-  h2 { font-size: 19px; margin: 32px 0 8px; color: #eef2fb; }
-  p, li { color: #c5cde0; font-size: 15.5px; }
-  p { margin: 0 0 14px; }
-  ul { padding-left: 22px; margin: 0 0 14px; }
-  li { margin-bottom: 6px; }
-  a { color: #60a5fa; } a:hover { color: #93c5fd; }
-  .meta { color: #8590ab; font-size: 14px; margin-bottom: 24px; }
-  footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid rgba(120,160,255,0.10); color: #8a93ad; font-size: 13px; text-align: center; }
-  footer a { color: #c5cde0; text-decoration: none; margin: 0 6px; } footer a:hover { color: #fff; text-decoration: underline; }
+  body {
+    font-family: 'Inter', 'Hind Siliguri', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(59, 130, 246, 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgba(30, 58, 138, 0.30) 0%, transparent 65%),
+      linear-gradient(165deg, #060a1c 0%, #0a1638 22%, #112858 45%, #173b85 60%, #0d2050 78%, #060a1c 100%);
+    background-attachment: fixed; min-height: 100vh;
+    line-height: 1.65;
+    font-feature-settings: 'cv02','cv03','cv04','cv11','ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.005em;
+    text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 64px 24px 96px; }
+  .top {
+    display: inline-flex; align-items: center; gap: 12px;
+    margin-bottom: 40px; font-weight: 700; font-size: 16px;
+    text-decoration: none; color: var(--text-strong);
+    padding: 8px 14px 8px 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--stroke);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    transition: background .2s var(--ease), border-color .2s var(--ease), transform .15s var(--ease);
+  }
+  .top:hover { background: rgba(255,255,255,0.06); border-color: var(--stroke-strong); transform: translateY(-1px); }
+  .top svg { width: 28px; height: 28px; flex-shrink: 0; }
+  h1 {
+    font-size: clamp(30px, 5vw, 42px); margin: 0 0 10px;
+    letter-spacing: -0.025em; line-height: 1.1; font-weight: 800;
+    color: var(--text-strong);
+  }
+  h2 {
+    font-size: 20px; margin: 36px 0 10px; color: var(--text-strong);
+    letter-spacing: -0.02em; font-weight: 700;
+  }
+  p, li { color: var(--text-mid); font-size: 15.5px; }
+  p { margin: 0 0 16px; }
+  ul { padding-left: 22px; margin: 0 0 16px; }
+  li { margin-bottom: 8px; }
+  strong { color: var(--text-strong); font-weight: 600; }
+  a { color: var(--accent); text-decoration: none; transition: color .2s var(--ease); }
+  a:hover { color: var(--accent-2); }
+  .meta { color: var(--text-soft); font-size: 14px; margin-bottom: 28px; }
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--stroke); color: var(--text-soft); font-size: 13px; text-align: center; }
+  footer a { color: var(--text-mid); margin: 0 10px; } footer a:hover { color: var(--text-strong); }
+  ::selection { background: rgba(96, 165, 250, 0.40); color: #fff; }
+  @media (max-width: 600px) { .wrap { padding: 40px 20px 72px; } h2 { font-size: 18px; margin-top: 30px; } }
 </style>
 </head>
 <body>
 <div class="wrap">
   <a class="top" href="/">
     <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="privGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#5b9bff"/><stop offset="100%" stop-color="#2563eb"/>
+        </linearGradient>
+      </defs>
       <rect width="512" height="512" rx="108" fill="#0d1220"/>
-      <rect x="126" y="140" width="260" height="72" rx="26" fill="#5b9bff"/>
-      <text x="256" y="194" font-family="Arial" font-size="42" font-weight="800" fill="#fff" text-anchor="middle">DL</text>
+      <rect x="126" y="140" width="260" height="72" rx="26" fill="url(#privGrad)"/>
+      <text x="256" y="194" font-family="Inter, Arial" font-size="42" font-weight="800" fill="#fff" text-anchor="middle">DL</text>
     </svg>
     Doinik Life
   </a>
