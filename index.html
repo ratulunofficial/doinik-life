@@ -2109,6 +2109,17 @@
     .exp-row { flex-wrap: wrap; }
     .exp-row input[type=number] { width: 100%; flex: 1; }
 
+    /* ── iOS / mobile keyboard zoom fix ──
+       iOS Safari (and some Android browsers) auto-zoom into the page when a
+       form field with font-size < 16px receives focus. Force every input,
+       textarea and select to be at least 16px on phone widths so tapping a
+       field never zooms the layout. */
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+
     .loan-add-row { grid-template-columns: 1fr 1fr; gap: 8px; }
     .loan-add-row input[type=text] { grid-column: 1 / -1; font-size: 14px; padding: 12px 14px; }
     .loan-add-row input[type=number] { grid-column: 1; }
