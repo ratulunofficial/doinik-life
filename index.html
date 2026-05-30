@@ -1740,6 +1740,10 @@
   .orders-toolbar .btn-orders:hover { background: rgba(70,130,255,0.1); border-color: rgba(90,155,255,0.3); }
   .orders-toolbar .btn-orders.primary { background: rgba(60,110,240,0.15); border-color: rgba(90,155,255,0.35); color: #5b9bff; }
   .orders-toolbar .btn-orders.primary:hover { background: rgba(60,110,240,0.25); }
+  .orders-toolbar .btn-orders:disabled,
+  .orders-toolbar .btn-orders[disabled] {
+    opacity: .35; cursor: not-allowed; pointer-events: none;
+  }
 
   .orders-table-wrap {
     overflow-x: auto; border-radius: 14px;
@@ -4867,6 +4871,8 @@
           <button class="btn-orders" onclick="document.getElementById('excelImportInput').click()">📥 Excel Import</button>
           <button class="btn-orders" onclick="exportOrdersExcel()">📤 Excel Export</button>
           <button class="btn-orders" onclick="sortOrdersByDayLeft()">⬆⬇ Day Left Sort</button>
+          <button class="btn-orders" id="undoOrderBtn" onclick="undoOrders()" title="Undo (Ctrl+Z / Cmd+Z)" disabled>↶ Undo</button>
+          <button class="btn-orders" id="redoOrderBtn" onclick="redoOrders()" title="Redo (Ctrl+X / Ctrl+Y / Cmd+Shift+Z)" disabled>↷ Redo</button>
           <button class="btn-orders delete-selected-btn" id="deleteSelectedBtn" onclick="deleteSelectedOrders()" style="display:none">🗑️ মুছুন (<span id="selectedCount">0</span>)</button>
           <button class="btn-orders deselect-btn" id="deselectBtn" onclick="deselectAllOrders()" style="display:none">✖ Deselect</button>
           <input type="file" id="excelImportInput" class="excel-import-input" accept=".xlsx,.xls,.csv" onchange="handleExcelImport(event)">
@@ -10975,6 +10981,112 @@ function setOrders(arr) {
   pushToFirebase();
 }
 
+/* ===== Undo / Redo for Orders Section =====
+   Snapshots the entire orders array before each mutation.
+   Only triggers from inside the Orders section (data scope) and the
+   keyboard shortcuts only fire when the Orders section is active.       */
+const ORDERS_HISTORY_MAX = 100;
+let ordersUndoStack = [];
+let ordersRedoStack = [];
+
+function _ordersSnapshot() {
+  try { return JSON.stringify(getOrders()); } catch(e) { return '[]'; }
+}
+
+function pushOrdersUndoState() {
+  try {
+    ordersUndoStack.push(_ordersSnapshot());
+    if (ordersUndoStack.length > ORDERS_HISTORY_MAX) ordersUndoStack.shift();
+    ordersRedoStack = [];   // any new mutation invalidates the redo branch
+    updateOrdersUndoRedoBtns();
+  } catch(e) {}
+}
+
+function _applyOrdersSnapshot(snap) {
+  try {
+    const arr = JSON.parse(snap);
+    if (!Array.isArray(arr)) return false;
+    localStorage.setItem('orders_data', JSON.stringify(arr));
+    pushToFirebase();
+    selectedOrderIndices.clear();
+    renderOrders();
+    return true;
+  } catch(e) { return false; }
+}
+
+function undoOrders() {
+  if (!ordersUndoStack.length) {
+    showToast('↶ Undo করার কিছু নেই');
+    return;
+  }
+  const current = _ordersSnapshot();
+  const prev = ordersUndoStack.pop();
+  if (_applyOrdersSnapshot(prev)) {
+    ordersRedoStack.push(current);
+    if (ordersRedoStack.length > ORDERS_HISTORY_MAX) ordersRedoStack.shift();
+    showToast('↶ Undo হয়েছে');
+  }
+  updateOrdersUndoRedoBtns();
+}
+
+function redoOrders() {
+  if (!ordersRedoStack.length) {
+    showToast('↷ Redo করার কিছু নেই');
+    return;
+  }
+  const current = _ordersSnapshot();
+  const next = ordersRedoStack.pop();
+  if (_applyOrdersSnapshot(next)) {
+    ordersUndoStack.push(current);
+    if (ordersUndoStack.length > ORDERS_HISTORY_MAX) ordersUndoStack.shift();
+    showToast('↷ Redo হয়েছে');
+  }
+  updateOrdersUndoRedoBtns();
+}
+
+function updateOrdersUndoRedoBtns() {
+  const u = document.getElementById('undoOrderBtn');
+  const r = document.getElementById('redoOrderBtn');
+  if (u) u.disabled = !ordersUndoStack.length;
+  if (r) r.disabled = !ordersRedoStack.length;
+}
+
+// Keyboard shortcuts — scoped to the Orders section only.
+// Ctrl/Cmd+Z = undo, Ctrl+X / Ctrl+Y / Ctrl+Shift+Z / Cmd+Shift+Z = redo.
+// Native cut/undo behavior in inputs/textareas is preserved.
+document.addEventListener('keydown', function(e) {
+  // Only when Orders section is the currently visible one
+  if (!document.body.classList.contains('orders-active')) return;
+
+  // Skip when user is typing in any editable field — let native behavior win
+  const t = e.target;
+  const tag = (t && t.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+
+  // Skip when the order add/edit modal is open (avoid surprising the user mid-edit)
+  const formOverlay = document.getElementById('orderFormOverlay');
+  if (formOverlay && formOverlay.classList.contains('active')) return;
+
+  const ctrlOrCmd = e.ctrlKey || e.metaKey;
+  if (!ctrlOrCmd) return;
+  const key = (e.key || '').toLowerCase();
+
+  // Redo: Ctrl+X (per request), Ctrl+Y, Ctrl+Shift+Z, Cmd+Shift+Z
+  if ((key === 'x' && !e.shiftKey) ||
+      (key === 'y' && !e.shiftKey) ||
+      (key === 'z' && e.shiftKey)) {
+    e.preventDefault();
+    redoOrders();
+    return;
+  }
+  // Undo: Ctrl+Z / Cmd+Z (no shift)
+  if (key === 'z' && !e.shiftKey) {
+    e.preventDefault();
+    undoOrders();
+    return;
+  }
+});
+
 function calcExpiryDate(dateStr, validityMonths) {
   if (!dateStr || !validityMonths) return '';
   const d = new Date(dateStr);
@@ -11283,6 +11395,7 @@ function deleteSelectedOrders() {
   const count = selectedOrderIndices.size;
   if (!count) return;
   if (!confirm(count + ' টি অর্ডার মুছে ফেলতে চান?')) return;
+  pushOrdersUndoState();
   let orders = getOrders();
   // Delete in reverse order to maintain indices
   const indices = [...selectedOrderIndices].sort((a,b) => b - a);
@@ -11366,6 +11479,7 @@ function saveOrder() {
     password: document.getElementById('orderFormPassword').value.trim()
   };
 
+  pushOrdersUndoState();
   if (editingOrderIndex >= 0) {
     orders[editingOrderIndex] = o;
   } else {
@@ -11382,6 +11496,7 @@ function updateOrderDate(idx, newDate) {
   const orders = getOrders();
   if (selectedOrderIndices.size > 0 && selectedOrderIndices.has(idx)) {
     // Update all selected rows' dates
+    pushOrdersUndoState();
     selectedOrderIndices.forEach(i => {
       if (orders[i]) orders[i].date = newDate;
     });
@@ -11390,6 +11505,7 @@ function updateOrderDate(idx, newDate) {
     showToast('📅 ' + selectedOrderIndices.size + ' টি Date আপডেট হয়েছে');
   } else {
     if (orders[idx]) {
+      pushOrdersUndoState();
       orders[idx].date = newDate;
       setOrders(orders);
       renderOrders();
@@ -11402,6 +11518,7 @@ function editOrder(idx) { openOrderForm(idx); }
 
 function deleteOrder(idx) {
   if (!confirm('এই অর্ডারটি মুছে ফেলতে চান?')) return;
+  pushOrdersUndoState();
   const orders = getOrders();
   orders.splice(idx, 1);
   setOrders(orders);
@@ -11513,6 +11630,7 @@ function parseXLSX(buffer) {
 
 function importOrderRows(rows) {
   const orders = getOrders();
+  pushOrdersUndoState();
   rows.forEach(row => {
     const keys = Object.keys(row);
     const get = (patterns) => {
