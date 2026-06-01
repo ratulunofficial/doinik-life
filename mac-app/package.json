@@ -1,6 +1,6 @@
 {
   "name": "doinik-life-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Doinik Life — native macOS desktop wrapper",
   "main": "main.js",
   "private": true,
