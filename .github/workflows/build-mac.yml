@@ -1,0 +1,61 @@
+name: Build macOS DMG
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mac-app/**'
+      - '.github/workflows/build-mac.yml'
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: mac-app
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build universal DMG
+        env:
+          # No Apple Developer signing — produces an unsigned DMG.
+          # Users right-click → Open the first time on macOS.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: npm run dist:universal
+
+      - name: List build output
+        run: ls -lah dist
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Doinik-Life-macOS-DMG
+          path: |
+            mac-app/dist/*.dmg
+            mac-app/dist/*.dmg.blockmap
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attach DMG to GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            mac-app/dist/*.dmg
+            mac-app/dist/*.dmg.blockmap
