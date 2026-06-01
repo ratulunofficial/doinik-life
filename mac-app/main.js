@@ -27,12 +27,25 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 820,
-    minWidth: 360,
+    minWidth: 480,
     minHeight: 600,
     title: APP_NAME,
     backgroundColor: '#060914', // matches the website's dark theme to avoid white flash
     show: false,
-    titleBarStyle: 'hiddenInset', // native macOS traffic-light buttons, no extra chrome
+    // Use the default native title bar so the user has a clear, draggable
+    // strip with traffic-light buttons (close / min / zoom) and obvious
+    // resize edges — same pattern Slack, Notion and Spotify use on macOS.
+    // (Previous `hiddenInset` made the whole window non-draggable because
+    // the web content covered the invisible drag region.)
+    titleBarStyle: 'default',
+    // Explicitly enable every standard window control so resizing, moving,
+    // maximizing, minimizing and going fullscreen all work.
+    resizable: true,
+    movable: true,
+    minimizable: true,
+    maximizable: true,
+    closable: true,
+    fullscreenable: true,
     icon: path.join(__dirname, 'build', 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
