@@ -1716,6 +1716,26 @@
   }
   .orders-search-clear:hover { background: rgba(90,155,255,0.3); color: #fff; }
 
+  /* Account search dropdown */
+  .orders-search-dropdown {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: #0c1530; border: 1px solid rgba(90,155,255,0.35);
+    border-radius: 10px; z-index: 999; max-height: 220px; overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,10,40,0.6);
+    display: none;
+  }
+  .orders-search-dropdown.open { display: block; animation: dropIn .14s ease; }
+  @keyframes dropIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: none; } }
+  .orders-search-dd-item {
+    padding: 7px 12px; font-size: 11.5px; color: var(--text2);
+    cursor: pointer; border-bottom: 1px solid rgba(90,155,255,0.08);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    transition: background .12s;
+  }
+  .orders-search-dd-item:last-child { border-bottom: none; }
+  .orders-search-dd-item:hover, .orders-search-dd-item.dd-active { background: rgba(59,130,246,0.18); color: #fff; }
+  .orders-search-dd-item mark { background: transparent; color: var(--green); font-weight: 700; }
+
   .orders-toolbar .delete-selected-btn {
     background: rgba(100,120,184,0.08); border-color: rgba(100,120,184,0.25); color: var(--red);
   }
@@ -4876,11 +4896,13 @@
           <button class="btn-orders" id="redoOrderBtn" onclick="redoOrders()" title="Redo (Ctrl+X / Ctrl+Y / Cmd+Shift+Z)" disabled>↷ Redo</button>
           <button class="btn-orders delete-selected-btn" id="deleteSelectedBtn" onclick="deleteSelectedOrders()" style="display:none">🗑️ মুছুন (<span id="selectedCount">0</span>)</button>
           <button class="btn-orders deselect-btn" id="deselectBtn" onclick="deselectAllOrders()" style="display:none">✖ Deselect</button>
+          <button class="btn-orders" id="showSelectedBtn" onclick="toggleShowSelected()" style="display:none">👁 Selected Only</button>
           <input type="file" id="excelImportInput" class="excel-import-input" accept=".xlsx,.xls,.csv" onchange="handleExcelImport(event)">
           <!-- Inline search bar: last item in the same row as the toolbar buttons -->
           <div class="orders-search-wrap">
-            <input type="text" id="ordersSearchInput" placeholder="🔍 Search..." oninput="debouncedRenderOrders()">
+            <input type="text" id="ordersSearchInput" placeholder="🔍 Search..." oninput="debouncedRenderOrders()" onfocus="showSearchDropdown()" onblur="hideSearchDropdown()" onkeydown="searchDropdownKeyNav(event)">
             <button class="orders-search-clear" id="ordersSearchClear" onclick="clearOrdersSearch()" style="display:none" title="Clear">✕</button>
+            <div class="orders-search-dropdown" id="ordersSearchDropdown"></div>
           </div>
         </div>
       </div>
@@ -11119,6 +11141,90 @@ let ordersSortDir = (() => {
   return (saved === 1 || saved === -1 || saved === 0) ? saved : 0;
 })(); // 0=none, 1=asc, -1=desc — persisted across reloads
 let selectedOrderIndices = new Set();
+let showOnlySelected = false;
+
+function toggleShowSelected() {
+  showOnlySelected = !showOnlySelected;
+  const btn = document.getElementById('showSelectedBtn');
+  if (btn) btn.textContent = showOnlySelected ? '👁 All Orders' : '👁 Selected Only';
+  renderOrders();
+}
+
+// ── Search dropdown helpers ──
+let _ddActiveIdx = -1;
+
+function buildSearchDropdown(val) {
+  const dd = document.getElementById('ordersSearchDropdown');
+  if (!dd) return;
+  if (!val) { dd.classList.remove('open'); dd.innerHTML = ''; return; }
+  const orders = getOrders();
+  const seen = new Set();
+  const matches = [];
+  orders.forEach(o => {
+    const acc = (o.account || '').trim();
+    if (acc && acc.toLowerCase().includes(val.toLowerCase()) && !seen.has(acc)) {
+      seen.add(acc);
+      matches.push(acc);
+    }
+  });
+  if (!matches.length) { dd.classList.remove('open'); dd.innerHTML = ''; return; }
+  const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const hi = s => s.replace(new RegExp('(' + val.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi'), '<mark>$1</mark>');
+  dd.innerHTML = matches.slice(0, 20).map((acc, i) =>
+    `<div class="orders-search-dd-item" data-val="${esc(acc)}" data-di="${i}" onmousedown="selectSearchDropdownItem('${esc(acc)}')">${hi(esc(acc))}</div>`
+  ).join('');
+  _ddActiveIdx = -1;
+  dd.classList.add('open');
+}
+
+function showSearchDropdown() {
+  const val = (document.getElementById('ordersSearchInput')?.value || '').trim();
+  buildSearchDropdown(val);
+}
+
+function hideSearchDropdown() {
+  setTimeout(() => {
+    const dd = document.getElementById('ordersSearchDropdown');
+    if (dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
+    _ddActiveIdx = -1;
+  }, 160);
+}
+
+function selectSearchDropdownItem(val) {
+  const input = document.getElementById('ordersSearchInput');
+  if (!input) return;
+  input.value = val;
+  const clearBtn = document.getElementById('ordersSearchClear');
+  if (clearBtn) clearBtn.style.display = 'flex';
+  const dd = document.getElementById('ordersSearchDropdown');
+  if (dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
+  renderOrders();
+}
+
+function searchDropdownKeyNav(e) {
+  const dd = document.getElementById('ordersSearchDropdown');
+  if (!dd || !dd.classList.contains('open')) return;
+  const items = dd.querySelectorAll('.orders-search-dd-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    _ddActiveIdx = Math.min(_ddActiveIdx + 1, items.length - 1);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    _ddActiveIdx = Math.max(_ddActiveIdx - 1, 0);
+  } else if (e.key === 'Enter' && _ddActiveIdx >= 0) {
+    e.preventDefault();
+    const item = items[_ddActiveIdx];
+    if (item) selectSearchDropdownItem(item.dataset.val);
+    return;
+  } else if (e.key === 'Escape') {
+    dd.classList.remove('open'); dd.innerHTML = '';
+    _ddActiveIdx = -1;
+    return;
+  } else { return; }
+  items.forEach((el, i) => el.classList.toggle('dd-active', i === _ddActiveIdx));
+  if (_ddActiveIdx >= 0) items[_ddActiveIdx].scrollIntoView({ block: 'nearest' });
+}
 
 // Debounced search for performance
 let _ordersSearchTimer = null;
@@ -11126,6 +11232,7 @@ function debouncedRenderOrders() {
   const clearBtn = document.getElementById('ordersSearchClear');
   const val = document.getElementById('ordersSearchInput').value;
   if (clearBtn) clearBtn.style.display = val ? 'flex' : 'none';
+  buildSearchDropdown(val);
   clearTimeout(_ordersSearchTimer);
   _ordersSearchTimer = setTimeout(renderOrders, 150);
 }
@@ -11155,21 +11262,42 @@ function renderOrders() {
     return { ...o, _idx: idx, _expiry: expiry, _dayLeft: dayLeft, _isHC: isHC };
   });
 
-  // Apply search
+  // Apply search — supports space-separated multiple accounts/emails
   if (searchVal) {
-    displayList = displayList.filter(o =>
-      (o.username || '').toLowerCase().includes(searchVal) ||
-      (o.account || '').toLowerCase().includes(searchVal)
-    );
+    const searchTerms = searchVal.split(/\s+/).filter(Boolean);
+    if (searchTerms.length > 1) {
+      // Multi-term mode: show rows whose account exactly matches ANY of the terms
+      displayList = displayList.filter(o => {
+        const acc = (o.account || '').toLowerCase().trim();
+        const uname = (o.username || '').toLowerCase().trim();
+        return searchTerms.some(term => acc === term || uname === term);
+      });
+    } else {
+      // Single-term mode: original substring search
+      displayList = displayList.filter(o =>
+        (o.username || '').toLowerCase().includes(searchVal) ||
+        (o.account || '').toLowerCase().includes(searchVal)
+      );
+    }
   }
 
-  // Hold/Cancelled orders always go to the bottom (both in default and sorted views).
-  // Within each group (top = active, bottom = hold/cancelled), apply the chosen
-  // day-left sort if any, otherwise keep original order.
+  // Show only selected filter
+  if (showOnlySelected && selectedOrderIndices.size > 0) {
+    displayList = displayList.filter(o => selectedOrderIndices.has(o._idx));
+  }
+
   displayList.sort((a, b) => {
+    // HC rows always sink to bottom
     if (a._isHC !== b._isHC) return a._isHC ? 1 : -1;
     if (ordersSortDir !== 0) {
-      return ordersSortDir === 1 ? a._dayLeft - b._dayLeft : b._dayLeft - a._dayLeft;
+      // Primary sort: day left (ascending or descending)
+      if (a._dayLeft !== b._dayLeft) {
+        return ordersSortDir === 1 ? a._dayLeft - b._dayLeft : b._dayLeft - a._dayLeft;
+      }
+      // Secondary sort: same day-left → group by username alphabetically
+      const ua = (a.username || '').toLowerCase();
+      const ub = (b.username || '').toLowerCase();
+      return ua.localeCompare(ub);
     }
     return a._idx - b._idx;
   });
@@ -11380,14 +11508,23 @@ function toggleSelectAll(cb) {
 function updateDeleteSelectedBtn() {
   const btn = document.getElementById('deleteSelectedBtn');
   const deselectBtn = document.getElementById('deselectBtn');
+  const showSelBtn = document.getElementById('showSelectedBtn');
   const count = selectedOrderIndices.size;
   btn.style.display = count > 0 ? 'inline-flex' : 'none';
   deselectBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+  if (showSelBtn) {
+    showSelBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+    if (count === 0) showOnlySelected = false; // auto-reset when nothing selected
+    showSelBtn.textContent = showOnlySelected ? '👁 All Orders' : '👁 Selected Only';
+  }
   document.getElementById('selectedCount').textContent = count;
 }
 
 function deselectAllOrders() {
   selectedOrderIndices.clear();
+  showOnlySelected = false;
+  const btn = document.getElementById('showSelectedBtn');
+  if (btn) btn.textContent = '👁 Selected Only';
   renderOrders();
   showToast('✖ সব Deselect হয়েছে');
 }
