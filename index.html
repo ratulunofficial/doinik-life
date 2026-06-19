@@ -2396,6 +2396,24 @@
   }
   .note-copy-tag::before { content: '📋'; font-size: 11.5px; opacity: 0.9; }
   .note-copy-tag.copied::before { content: '✓'; opacity: 1; font-weight: 800; }
+  /* Nested copy tag inside a parent copy tag — slightly different look */
+  .note-copy-tag .note-copy-tag {
+    background: linear-gradient(135deg, rgba(96,165,250,0.30), rgba(96,165,250,0.15));
+    border-color: rgba(96,165,250,0.55);
+    color: #bfdbfe;
+    font-size: 0.93em;
+    padding: 2px 8px 2px 7px;
+  }
+  .note-copy-tag .note-copy-tag::before { content: '🔗'; font-size: 10px; }
+  .note-copy-tag .note-copy-tag:hover {
+    background: linear-gradient(135deg, rgba(96,165,250,0.48), rgba(96,165,250,0.25));
+    border-color: rgba(96,165,250,0.80);
+    color: #fff;
+  }
+  .note-copy-tag .note-copy-tag.copied {
+    background: linear-gradient(135deg, rgba(96,165,250,0.65), rgba(96,165,250,0.40));
+    border-color: rgba(96,165,250,0.90);
+  }
   .note-editor-body textarea.note-ed-content::placeholder { color: var(--text5); }
   .note-editor-toolbar {
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
@@ -9579,29 +9597,56 @@ function setNotes(arr) {
   pushToFirebase();
 }
 
-// Render note content as HTML, replacing `{{...}}` markers with click-to-copy
-// chips. Everything else is escaped + linebreaks preserved (CSS pre-wrap).
+// Render note content as HTML, supporting nested {{...}} markers.
+// Outer {{...}} = copy chip for the full text (inner {{ }} stripped to plain).
+// Inner {{...}} = smaller copy chip for just that word/phrase.
+// Click inner chip -> copies inner text only.
+// Click outer chip (outside inner chips) -> copies full outer plain text.
 function renderNoteContentHtml(raw) {
   if (!raw) return '';
-  const parts = [];
-  let i = 0;
-  const re = /\{\{([\s\S]+?)\}\}/g;
-  let m;
-  while ((m = re.exec(raw)) !== null) {
-    if (m.index > i) parts.push({ type: 'text', value: raw.slice(i, m.index) });
-    parts.push({ type: 'copy', value: m[1] });
-    i = m.index + m[0].length;
+
+  // Strip all {{ }} markers recursively to get plain text.
+  function plainText(str) {
+    var result = str;
+    var prev;
+    do {
+      prev = result;
+      result = result.replace(/\{\{([\s\S]*?)\}\}/g, function(_, inner) { return inner; });
+    } while (result !== prev);
+    return result;
   }
-  if (i < raw.length) parts.push({ type: 'text', value: raw.slice(i) });
-  return parts.map(p => {
-    if (p.type === 'text') return escHtml(p.value);
-    // Use a base64-encoded data attr so weird chars (newlines, quotes) survive.
-    const b64 = btoa(unescape(encodeURIComponent(p.value)));
-    return '<span class="note-copy-tag" data-copy="' + b64 + '" onclick="copyTextFromTag(this,event)">' + escHtml(p.value) + '</span>';
-  }).join('');
+
+  // Parse str into HTML, handling nested {{ }}.
+  function parse(str) {
+    var html = '';
+    var i = 0;
+    while (i < str.length) {
+      var open = str.indexOf('{{', i);
+      if (open === -1) { html += escHtml(str.slice(i)); break; }
+      if (open > i) html += escHtml(str.slice(i, open));
+      // Find matching closing }}
+      var depth = 1, j = open + 2;
+      while (j < str.length && depth > 0) {
+        if (str[j] === '{' && str[j+1] === '{') { depth++; j += 2; }
+        else if (str[j] === '}' && str[j+1] === '}') { depth--; j += 2; }
+        else { j++; }
+      }
+      var inner = str.slice(open + 2, j - 2);
+      var fullPlain = plainText(inner);
+      var b64 = btoa(unescape(encodeURIComponent(fullPlain)));
+      var innerHtml = parse(inner);
+      html += '<span class="note-copy-tag" data-copy="' + b64 + '" onclick="copyTextFromTag(this,event)">' + innerHtml + '</span>';
+      i = j;
+    }
+    return html;
+  }
+
+  return parse(raw);
 }
 
 // Copy the text stored on a `.note-copy-tag` element to the clipboard.
+// Copy the text stored on a .note-copy-tag element.
+// stopPropagation ensures inner (nested) chips don't bubble to outer chips.
 async function copyTextFromTag(el, ev) {
   if (ev) { ev.stopPropagation(); ev.preventDefault(); }
   if (!el) return;
@@ -9625,9 +9670,9 @@ async function copyTextFromTag(el, ev) {
   if (ok) {
     el.classList.add('copied');
     setTimeout(() => el.classList.remove('copied'), 1100);
-    showToast('📋 Copied: ' + (text.length > 30 ? text.slice(0, 30) + '…' : text));
+    showToast('\u{1F4CB} Copied: ' + (text.length > 30 ? text.slice(0, 30) + '\u2026' : text));
   } else {
-    showToast('❌ Copy korte parlam na');
+    showToast('\u274C Copy korte parlam na');
   }
 }
 
