@@ -11403,7 +11403,8 @@ function renderOrders() {
     } else {
       html += '<td>' + (o.validity || '') + ' মাস</td>';
     }
-    html += '<td>' + formatDate(expiry) + '</td>';
+    const expiryFormatted = formatDate(expiry);
+    html += '<td>' + (expiryFormatted ? '<span class="copy-text date-copy-text" onclick="copyOrderDetails(' + idx + ', this)" title="ক্লিক করে কপি করুন">' + expiryFormatted + '</span>' : '') + '</td>';
     if (isHoldOrCancelled) {
       html += '<td></td>';
     } else {
@@ -11531,6 +11532,85 @@ function copyToClipCell(el, text) {
     flashCopied(el);
     showToast('📋 Password কপি হয়েছে');
   });
+}
+
+function copyOrderDetails(idx, el) {
+  const orders = getOrders();
+  let targetList = [];
+
+  // If user has selected rows with checkboxes
+  if (selectedOrderIndices.size > 0) {
+    if (currentDisplayList && currentDisplayList.length) {
+      currentDisplayList.forEach(o => {
+        if (selectedOrderIndices.has(o._idx)) {
+          targetList.push(o);
+        }
+      });
+    } else {
+      const sortedIndices = [...selectedOrderIndices].sort((a, b) => a - b);
+      sortedIndices.forEach(i => {
+        if (orders[i]) targetList.push({ ...orders[i], _idx: i });
+      });
+    }
+    // Fallback if none matched
+    if (!targetList.length) {
+      const sortedIndices = [...selectedOrderIndices].sort((a, b) => a - b);
+      sortedIndices.forEach(i => {
+        if (orders[i]) targetList.push({ ...orders[i], _idx: i });
+      });
+    }
+  }
+
+  // If no rows were selected, copy just the clicked row
+  if (!targetList.length) {
+    const o = orders[idx];
+    if (o) {
+      targetList.push({ ...o, _idx: idx });
+    }
+  }
+
+  if (!targetList.length) return;
+
+  const blocks = targetList.map(o => {
+    const expiry = o._expiry || calcExpiryDate(o.date, o.validity);
+    const expiryFormatted = formatDate(expiry);
+    const mail = (o.account || '').replace(/[\r\n]+/g, ' ').trim();
+    const pass = (o.password || '').replace(/[\r\n]+/g, ' ').trim();
+    return 'Mail: ' + mail + '\nPass: ' + pass + '\n\nExpired : ' + expiryFormatted;
+  });
+
+  const textToCopy = blocks.join('\n\n');
+  const count = targetList.length;
+
+  const doSuccess = () => {
+    flashCopied(el);
+    if (count > 1) {
+      document.querySelectorAll('#ordersTableBody tr.selected .date-copy-text').forEach(node => flashCopied(node));
+      showToast('📋 ' + count + ' টি Order Details কপি হয়েছে');
+    } else {
+      showToast('📋 Order Details কপি হয়েছে');
+    }
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(textToCopy).then(doSuccess).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = textToCopy;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      doSuccess();
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = textToCopy;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    doSuccess();
+  }
 }
 
 function toggleSelectAll(cb) {
