@@ -1,0 +1,8 @@
+node_modules
+dist
+release
+*.local
+*.jks
+*.keystore
+android/keystore.properties
+android/local.properties
