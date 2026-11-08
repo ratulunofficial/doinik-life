@@ -1,61 +1,32 @@
-name: Build macOS DMG
+# Builds the macOS app (.dmg for Apple Silicon + Intel) on GitHub's free macOS runner.
+# GitHub → Actions → "Build macOS app" → Run workflow. The .dmg files appear under "Artifacts".
+name: Build macOS app
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'mac-app/**'
-      - '.github/workflows/build-mac.yml'
-  workflow_dispatch:
-  release:
-    types: [published]
-
-permissions:
-  contents: write
+  workflow_dispatch: {}
 
 jobs:
-  build:
-    runs-on: macos-latest
-    defaults:
-      run:
-        working-directory: mac-app
-
+  mac:
+    runs-on: macos-14
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+      - name: Install
+        run: npm ci --no-audit --no-fund
 
-      - name: Build universal DMG
+      - name: Build web app + macOS app
         env:
-          # No Apple Developer signing — produces an unsigned DMG.
-          # Users right-click → Open the first time on macOS.
-          CSC_IDENTITY_AUTO_DISCOVERY: false
-        run: npm run dist:universal
+          # no paid Apple certificate: the app is ad-hoc signed (see README for the one-time "xattr" step)
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npm run app:mac
 
-      - name: List build output
-        run: ls -lah dist
-
-      - name: Upload DMG artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: Doinik-Life-macOS-DMG
-          path: |
-            mac-app/dist/*.dmg
-            mac-app/dist/*.dmg.blockmap
+          name: Doinik-Life-macOS
+          path: release/*.dmg
           if-no-files-found: error
-          retention-days: 30
-
-      - name: Attach DMG to GitHub Release
-        if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            mac-app/dist/*.dmg
-            mac-app/dist/*.dmg.blockmap
